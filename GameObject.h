@@ -21,8 +21,10 @@ public:
     void setRotation(float angle, float x, float y, float z);
     void setScale(float x, float y, float z);
     void setVertices(const std::vector<float>& vertices);
+    void setColors(const std::vector<float>& cols);
     void setTexture(GLuint texture);
     void setShader(GLuint shader);
+    void setCenter(float x, float y, float z);
 
     //getters
     float getPositionX();
@@ -36,7 +38,7 @@ public:
     float getScaleY();
     float getScaleZ();
     std::vector<float> getVertices();
-    
+    std::vector<float> getVerticesTranformed();
 
     void draw();
 
@@ -47,11 +49,13 @@ private:
     float rotation[4];
     float scale[3];
     std::vector<float> vertices;
+    std::vector<float> colors;
     GLuint texture;
     GLuint shader;
 
     // Private member functions
     void applyTransformations();
+    void Rotate();
 };
 
 #endif

@@ -1,8 +1,8 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <iostream>
-#include <math.h>
 #include "GameObject.h"
+#include "SpaceShip.h"
 
 // Window dimensions
 const int WINDOW_WIDTH = 800;
@@ -14,7 +14,7 @@ const float SUN_POSITION[] = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
 const float SUN_COLOR[] = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
 
 // Spaceship object
-GameObject spaceship(SPACESHIP);
+SpaceShip spaceship;
 
 // Function to initialize OpenGL settings
 void initOpenGL() {
@@ -42,25 +42,33 @@ void initOpenGL() {
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
     // Initialize spaceship properties
-    spaceship.setPosition(0.0f, 50.0f, 2000.0f);
-    spaceship.setScale(50.0f, 50.0f, 50.0f);
+    spaceship.setPosition(0.0f, 1000.0f, 2000.0f);
+    spaceship.setScale(1.0f, 1.0f, 1.0f);
 
     // Define spaceship vertices (simple triangle)
     std::vector<float> spaceshipVertices = {
-        0.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f,
-        0.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f,
-        0.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        0.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, 1.0f
+        0.0f, 100.0f, 0.0f,
+        -100.0f, -100.0f, 100.0f,
+        100.0f, -100.0f, 100.0f,
+        0.0f, 100.0f, 0.0f,
+        100.0f, -100.0f, 100.0f,
+        100.0f, -100.0f, -100.0f,
+        0.0f, 100.0f, 0.0f,
+        100.0f, -100.0f, -100.0f,
+        -100.0f, -100.0f, -100.0f,
+        0.0f, 100.0f, 0.0f,
+        -100.0f, -100.0f, -100.0f,
+        -100.0f, -100.0f, 100.0f
     };
+    std::vector<float> colors;
+    for (int i = 0; i < spaceshipVertices.size(); i++) {
+        colors.push_back(0);
+        colors.push_back(0.9);
+        colors.push_back(0.9);
+    }
+
     spaceship.setVertices(spaceshipVertices);
+    spaceship.setColors(colors);
 }
 
 // Function to handle rendering the scene
@@ -70,6 +78,7 @@ void display() {
 
     // Set the view matrix
     glLoadIdentity();
+    // Set the camera position, look at point, and up vector as a first-person camera from the spaceship
     gluLookAt(0.0, 2000.0, 6000.0, // Camera position
               0.0, 0.0, 0.0,       // Look at point
               0.0, 1.0, 0.0);      // Up vector
@@ -108,51 +117,31 @@ void keyboard(unsigned char key, int x, int y) {
         case 27: // ESC key
             exit(0);
             break;
+        case 'z':
+            spaceship.RotateLeft();
+            break;
+        case 'x':
+            spaceship.RotateRight();
+            break;
         // Add more key controls here for your game
     }
+    glutPostRedisplay();
 }
 
 // Function to handle special key input (arrow keys)
 void specialKeys(int key, int x, int y) {
-    float moveSpeed = 100.0f;
-    float angleSpeed = 5.0f;
-
     switch (key) {
         case GLUT_KEY_UP:
-            spaceship.setPosition(
-                spaceship.getPositionX() + moveSpeed * sin(spaceship.getRotationY() * 3.14159 / 180),
-                spaceship.getPositionY(),
-                spaceship.getPositionZ() - moveSpeed * cos(spaceship.getRotationY() * 3.14159 / 180)
-            );
+            spaceship.moveForward();
             break;
         case GLUT_KEY_DOWN:
-            spaceship.setPosition(
-                spaceship.getPositionX() - moveSpeed * sin(spaceship.getRotationY() * 3.14159 / 180),
-                spaceship.getPositionY(),
-                spaceship.getPositionZ() + moveSpeed * cos(spaceship.getRotationY() * 3.14159 / 180)
-            );
+            spaceship.moveBackward();
             break;
         case GLUT_KEY_LEFT:
-            spaceship.setRotation(
-                spaceship.getRotationAngle(),
-                spaceship.getRotationX(),
-                spaceship.getRotationY() - angleSpeed,
-                spaceship.getRotationZ()
-            );
-            if (spaceship.getRotationY() < 0) spaceship.setRotation(
-                spaceship.getRotationAngle(),
-                spaceship.getRotationX(),
-                spaceship.getRotationY() + 360,
-                spaceship.getRotationZ()
-            );
+            spaceship.moveLeft();
             break;
         case GLUT_KEY_RIGHT:
-            spaceship.setRotation(
-                spaceship.getRotationAngle(),
-                spaceship.getRotationX(),
-                spaceship.getRotationY() + angleSpeed,
-                spaceship.getRotationZ()
-            );
+            spaceship.moveRight();
             break;
     }
     glutPostRedisplay();

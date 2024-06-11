@@ -1,9 +1,10 @@
 #include "GameObject.h"
 #include <GL/freeglut.h>
+#include <math.h>
 
 GameObject::GameObject(ObjectType type) : type(type), texture(0), shader(0) {
     setPosition(0.0f, 0.0f, 0.0f);
-    setRotation(0.0f, 0.0f, 0.0f, 1.0f);
+    setRotation(0.0f, 0.0f, 1.0f, 0.0f);
     setScale(1.0f, 1.0f, 1.0f);
 }
 
@@ -30,6 +31,10 @@ void GameObject::setVertices(const std::vector<float>& verts) {
     vertices = verts;
 }
 
+void GameObject::setColors(const std::vector<float>& cols) {
+    colors = cols;
+}
+
 void GameObject::setTexture(GLuint tex) {
     texture = tex;
 }
@@ -44,7 +49,7 @@ void GameObject::applyTransformations() {
     glScalef(scale[0], scale[1], scale[2]);
 }
 
-void GameObject::draw() {
+void GameObject::draw(){
     glPushMatrix();
     applyTransformations();
 
@@ -53,12 +58,13 @@ void GameObject::draw() {
     }
 
     if (texture) {
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_3D, texture);
+        glEnable(GL_TEXTURE_3D);
     }
 
     glBegin(GL_TRIANGLES);
     for (size_t i = 0; i < vertices.size(); i += 3) {
+        glColor3f(colors[i*3], colors[i*3+1], colors[i*3+2]);
         glVertex3f(vertices[i], vertices[i + 1], vertices[i + 2]);
     }
     glEnd();
@@ -116,4 +122,38 @@ float GameObject::getScaleZ() {
 
 std::vector<float> GameObject::getVertices() {
     return vertices;
+}
+
+std::vector<float> GameObject::getVerticesTranformed() {
+    // Create a deep copy of vertices
+    std::vector<float> transformedVertices = vertices;
+
+    // Scaling
+    for (size_t i = 0; i < transformedVertices.size(); i += 3) {
+        transformedVertices[i] *= scale[0];
+        transformedVertices[i + 1] *= scale[1];
+        transformedVertices[i + 2] *= scale[2];
+    }
+
+    // Rotation around the y-axis
+    float angleRad = rotation[0] * (3.14159265f / 180.0f);
+    float cosAngle = cos(angleRad);
+    float sinAngle = sin(angleRad);
+
+    for (size_t i = 0; i < transformedVertices.size(); i += 3) {
+        float x = transformedVertices[i];
+        float z = transformedVertices[i + 2];
+
+        transformedVertices[i] = x * cosAngle + z * sinAngle;
+        transformedVertices[i + 2] = -x * sinAngle + z * cosAngle;
+    }
+
+    // Translation
+    for (size_t i = 0; i < transformedVertices.size(); i += 3) {
+        transformedVertices[i] += position[0];
+        transformedVertices[i + 1] += position[1];
+        transformedVertices[i + 2] += position[2];
+    }
+
+    return transformedVertices;
 }

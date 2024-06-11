@@ -1,0 +1,5 @@
+1- in the command line run this command to compile the files:
+g++ SpaceWanderers.cpp GameObject.cpp SpaceShip.cpp GameMaster.cpp -o SpaceWanderers -lopengl32 -lglew32 -lfreeglut -lglu32
+
+2- then run this command to start the game:
+./SpaceWanderers
