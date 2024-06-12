@@ -31,15 +31,23 @@ void GameMaster::SpecialKey(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
             spaceship.moveForward();
+            spaceship.updateFirstPersonView();
+            spaceship.updateThirdPersonView();
             break;
         case GLUT_KEY_DOWN:
             spaceship.moveBackward();
+            spaceship.updateFirstPersonView();
+            spaceship.updateThirdPersonView();
             break;
         case GLUT_KEY_LEFT:
             spaceship.moveLeft();
+            spaceship.updateFirstPersonView();
+            spaceship.updateThirdPersonView();
             break;
         case GLUT_KEY_RIGHT:
             spaceship.moveRight();
+            spaceship.updateFirstPersonView();
+            spaceship.updateThirdPersonView();
             break;
     }
 }
@@ -51,9 +59,13 @@ void GameMaster::keyChar(unsigned char key) {
         break;
     case 'z':
         spaceship.RotateLeft();
+        spaceship.updateFirstPersonView();
+        spaceship.updateThirdPersonView();
         break;
     case 'x':
         spaceship.RotateRight();
+        spaceship.updateFirstPersonView();
+        spaceship.updateThirdPersonView();
         break;
     // Add more key controls here for your game
     }
@@ -120,6 +132,8 @@ void GameMaster::StartSurvivalMode() {
 
     spaceship.setVertices(spaceshipVertices);
     spaceship.setColors(colors);
+    spaceship.updateFirstPersonView();
+    spaceship.updateThirdPersonView();
 
     updateGameState(SURVIVAL_MODE);
 }
@@ -137,16 +151,58 @@ void GameMaster::DrawMainMenu() {
 }
 
 void GameMaster::DrawSurvivalMode() {
-    // Clear the color and depth buffers
+    // Clear the color and depth buffers for the main viewport
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Set the view matrix
+    // First viewport (main view)
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glLoadIdentity();
-    // Set the camera position, look at point, and up vector as a first-person camera from the spaceship
-    gluLookAt(0.0, 2000.0, 6000.0, // Camera position
-              0.0, 0.0, 0.0,       // Look at point
-              0.0, 1.0, 0.0);      // Up vector
+    // Set the first-person camera from the spaceship
+    std::vector<float> cameraPosition1 = spaceship.getFirstPersonCameraPosition();
+    std::vector<float> lookAt1 = spaceship.getFirstPersonLookAt();
+    gluLookAt(cameraPosition1[0], cameraPosition1[1], cameraPosition1[2], 
+              lookAt1[0], lookAt1[1], lookAt1[2], 
+              0.0f, 1.0f, 0.0f);
 
+    // Draw the scene
+    DrawScene();
+
+    // Second viewport (alternative view)
+    int smallViewportWidth = WINDOW_WIDTH *11/40;
+    int smallViewportHeight = WINDOW_HEIGHT *11/40;
+    int smallViewportX = WINDOW_WIDTH - smallViewportWidth;
+    int smallViewportY = 0;
+
+    // Enable scissor test to limit the clearing to the second viewport
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(smallViewportX, smallViewportY, smallViewportWidth, smallViewportHeight);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_SCISSOR_TEST);
+
+    glViewport(smallViewportX, smallViewportY, smallViewportWidth, smallViewportHeight);
+    glLoadIdentity();
+    std::vector<float> cameraPosition2 = spaceship.getThirdPersonCameraPosition();
+    std::vector<float> lookAt2 = spaceship.getThirdPersonLookAt();
+    gluLookAt(cameraPosition2[0], cameraPosition2[1], cameraPosition2[2], 
+              lookAt2[0], lookAt2[1], lookAt2[2], 
+              0.0f, 1.0f, 0.0f);
+
+    // Draw the scene again
+    DrawScene();
+
+    // Swap the front and back buffers to display the scene
+    glutSwapBuffers();
+}
+
+void GameMaster::DrawTimeMode() {
+    // Draw the time mode
+}
+
+void GameMaster::DrawGameOver() {
+    // Draw the game over screen
+}
+
+void GameMaster::DrawScene() {
     // Draw the sun
     glPushMatrix();
     glTranslatef(SUN_POSITION[0], SUN_POSITION[1], SUN_POSITION[2]);
@@ -156,17 +212,5 @@ void GameMaster::DrawSurvivalMode() {
 
     // Draw the spaceship
     spaceship.draw();
-
-    // Swap the front and back buffers to display the scene
-    glutSwapBuffers();
-    // Draw the survival mode
-}
-
-void GameMaster::DrawTimeMode() {
-    // Draw the time mode
-}
-
-void GameMaster::DrawGameOver() {
-    // Draw the game over screen
 }
 

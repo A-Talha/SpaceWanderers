@@ -55,7 +55,6 @@ private:
 
     // Private member functions
     void applyTransformations();
-    void Rotate();
 };
 
 #endif

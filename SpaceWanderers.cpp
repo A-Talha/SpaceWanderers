@@ -5,8 +5,8 @@
 
 
 // Window dimensions
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+const int WINDOW_WIDTH = 1300;
+const int WINDOW_HEIGHT = 800;
 const float MAP_SIZE = 10000.0f;
 
 //GameMaster object

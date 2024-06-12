@@ -34,11 +34,14 @@ private:
     std::vector<float> SUN_POSITION = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
     std::vector<float> SUN_COLOR = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
     int score;
+    const int WINDOW_WIDTH = 1300;
+    const int WINDOW_HEIGHT = 800;
     std::vector<GameObject> gameObjects;
     void DrawMainMenu();
     void DrawSurvivalMode();
     void DrawTimeMode();
     void DrawGameOver();
+    void DrawScene();
 
 };
 
