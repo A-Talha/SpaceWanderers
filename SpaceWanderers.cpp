@@ -16,6 +16,7 @@ GameMaster gameMaster;
 // Function to initialize OpenGL settings
 void initOpenGL() {
     gameMaster.StartSurvivalMode();
+    //gameMaster.goToMainMenu();
 }
 
 // Function to handle rendering the scene
