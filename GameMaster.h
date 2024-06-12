@@ -20,11 +20,7 @@ public:
     GameMaster();
     void draw();
     void updateGameState(GameState newState);
-    void keyUp();
-    void keyDown();
-    void keyLeft();
-    void keyRight();
-    void keySpace();
+    void SpecialKey(int key , int x, int y);
     void keyChar(unsigned char key);
     void GoToMainMenu();
     void StartSurvivalMode();
@@ -35,6 +31,8 @@ public:
 private:
     GameState state;
     SpaceShip spaceship;
+    std::vector<float> SUN_POSITION = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
+    std::vector<float> SUN_COLOR = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
     int score;
     std::vector<GameObject> gameObjects;
     void DrawMainMenu();

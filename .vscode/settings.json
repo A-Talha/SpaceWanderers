@@ -50,6 +50,13 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "map": "cpp",
-        "format": "cpp"
+        "format": "cpp",
+        "charconv": "cpp",
+        "cstring": "cpp",
+        "set": "cpp",
+        "fstream": "cpp",
+        "span": "cpp",
+        "sstream": "cpp",
+        "variant": "cpp"
     }
 }
