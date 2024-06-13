@@ -76,8 +76,14 @@ void GameMaster::GoToMainMenu() {
 }
 
 void GameMaster::StartSurvivalMode() {
-    const float SUN_POSITION[] = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
-    const float SUN_COLOR[] = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
+    const float SUN_POSITION1[] = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
+    const float SUN_COLOR1[] = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
+    //create the sun from planet class
+    sun = Planet();
+    sun.setPlanetRadius(500.0f);
+    sun.setCenter(SUN_POSITION);
+    sun.setPlanetColor(SUN_COLOR);
+    gameObjects.push_back(sun);
     // Set the background color to black
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -89,9 +95,9 @@ void GameMaster::StartSurvivalMode() {
     glEnable(GL_LIGHT0);
 
     // Set the light properties
-    glLightfv(GL_LIGHT0, GL_POSITION, SUN_POSITION);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, SUN_COLOR);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, SUN_COLOR);
+    glLightfv(GL_LIGHT0, GL_POSITION, SUN_POSITION1);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, SUN_COLOR1);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, SUN_COLOR1);
 
     // Set global ambient light
     GLfloat globalAmbient[] = {0.2f, 0.2f, 0.2f, 1.0f};
@@ -203,14 +209,10 @@ void GameMaster::DrawGameOver() {
 }
 
 void GameMaster::DrawScene() {
-    // Draw the sun
-    glPushMatrix();
-    glTranslatef(SUN_POSITION[0], SUN_POSITION[1], SUN_POSITION[2]);
-    glColor3f(SUN_COLOR[0], SUN_COLOR[1], SUN_COLOR[2]);
-    glutSolidSphere(500.0, 20, 20); // Sun with a radius of 500
-    glPopMatrix();
-
-    // Draw the spaceship
+    sun.draw();
     spaceship.draw();
 }
 
+void GameMaster::Update() {
+    
+}

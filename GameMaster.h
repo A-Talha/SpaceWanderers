@@ -7,6 +7,7 @@
 #include <iostream>
 #include "GameObject.h"
 #include "SpaceShip.h"
+#include "Planet.h"
 
 enum GameState {
     MAIN_MENU,
@@ -26,11 +27,13 @@ public:
     void StartSurvivalMode();
     void StartTimeMode();
     void EndGameOver();
+    void Update();
 
 
 private:
     GameState state;
     SpaceShip spaceship;
+    Planet sun;
     std::vector<float> SUN_POSITION = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
     std::vector<float> SUN_COLOR = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
     int score;

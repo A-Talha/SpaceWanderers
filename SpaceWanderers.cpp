@@ -12,12 +12,19 @@ const float MAP_SIZE = 10000.0f;
 //GameMaster object
 GameMaster gameMaster;
 
+void Update() {
+    gameMaster.Update();
+    glutPostRedisplay();
+}
 
 // Function to initialize OpenGL settings
 void initOpenGL() {
     gameMaster.StartSurvivalMode();
     //gameMaster.goToMainMenu();
+    glutIdleFunc(Update);
 }
+
+
 
 // Function to handle rendering the scene
 void display() {

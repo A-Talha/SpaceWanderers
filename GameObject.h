@@ -40,7 +40,7 @@ public:
     std::vector<float> getVertices();
     std::vector<float> getVerticesTranformed();
 
-    void draw();
+    virtual void draw();
 
 private:
     // Private member variables
