@@ -1,9 +1,18 @@
-//GameMaster.CPP
 #include "GameMaster.h"
 
-
 GameMaster::GameMaster() {
-    
+    state = MAIN_MENU; // Initial game state
+}
+
+GameMaster::~GameMaster() {
+    clearGameObjects();
+}
+
+void GameMaster::clearGameObjects() {
+    for (GameObject* obj : gameObjects) {
+        delete obj;
+    }
+    gameObjects.clear();
 }
 
 void GameMaster::draw() {
@@ -29,26 +38,26 @@ void GameMaster::updateGameState(GameState newState) {
 
 void GameMaster::SpecialKey(int key, int x, int y) {
     switch (key) {
-        case GLUT_KEY_UP:
-            spaceship.moveForward();
-            spaceship.updateFirstPersonView();
-            spaceship.updateThirdPersonView();
-            break;
-        case GLUT_KEY_DOWN:
-            spaceship.moveBackward();
-            spaceship.updateFirstPersonView();
-            spaceship.updateThirdPersonView();
-            break;
-        case GLUT_KEY_LEFT:
-            spaceship.moveLeft();
-            spaceship.updateFirstPersonView();
-            spaceship.updateThirdPersonView();
-            break;
-        case GLUT_KEY_RIGHT:
-            spaceship.moveRight();
-            spaceship.updateFirstPersonView();
-            spaceship.updateThirdPersonView();
-            break;
+    case GLUT_KEY_UP:
+        spaceship.moveForward();
+        spaceship.updateFirstPersonView();
+        spaceship.updateThirdPersonView();
+        break;
+    case GLUT_KEY_DOWN:
+        spaceship.moveBackward();
+        spaceship.updateFirstPersonView();
+        spaceship.updateThirdPersonView();
+        break;
+    case GLUT_KEY_LEFT:
+        spaceship.moveLeft();
+        spaceship.updateFirstPersonView();
+        spaceship.updateThirdPersonView();
+        break;
+    case GLUT_KEY_RIGHT:
+        spaceship.moveRight();
+        spaceship.updateFirstPersonView();
+        spaceship.updateThirdPersonView();
+        break;
     }
 }
 
@@ -78,12 +87,17 @@ void GameMaster::GoToMainMenu() {
 void GameMaster::StartSurvivalMode() {
     const float SUN_POSITION1[] = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
     const float SUN_COLOR1[] = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
-    //create the sun from planet class
+
+    // Clear any existing game objects
+    clearGameObjects();
+
+    // Create the sun from Planet class
     sun = Planet();
     sun.setPlanetRadius(500.0f);
     sun.setCenter(SUN_POSITION);
     sun.setPlanetColor(SUN_COLOR);
-    gameObjects.push_back(sun);
+    gameObjects.push_back(&sun);
+
     // Set the background color to black
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -109,8 +123,6 @@ void GameMaster::StartSurvivalMode() {
 
     // Initialize spaceship properties
     spaceship = SpaceShip();
-    spaceship.setPosition(0.0f, 1000.0f, 2000.0f);
-     // Initialize spaceship properties
     spaceship.setPosition(0.0f, 1000.0f, 2000.0f);
     spaceship.setScale(1.0f, 1.0f, 1.0f);
 
@@ -141,6 +153,8 @@ void GameMaster::StartSurvivalMode() {
     spaceship.updateFirstPersonView();
     spaceship.updateThirdPersonView();
 
+    gameObjects.push_back(&spaceship);
+    
     updateGameState(SURVIVAL_MODE);
 }
 
@@ -174,8 +188,8 @@ void GameMaster::DrawSurvivalMode() {
     DrawScene();
 
     // Second viewport (alternative view)
-    int smallViewportWidth = WINDOW_WIDTH *11/40;
-    int smallViewportHeight = WINDOW_HEIGHT *11/40;
+    int smallViewportWidth = WINDOW_WIDTH * 11 / 40;
+    int smallViewportHeight = WINDOW_HEIGHT * 11 / 40;
     int smallViewportX = WINDOW_WIDTH - smallViewportWidth;
     int smallViewportY = 0;
 
@@ -209,10 +223,11 @@ void GameMaster::DrawGameOver() {
 }
 
 void GameMaster::DrawScene() {
-    sun.draw();
-    spaceship.draw();
+    for (GameObject* obj : gameObjects) {
+        obj->draw();
+    }
 }
 
 void GameMaster::Update() {
-    
+    // Update game logic
 }

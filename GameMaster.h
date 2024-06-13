@@ -2,6 +2,7 @@
 #define GAMEMASTER_H
 
 #include <vector>
+#include <memory>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <iostream>
@@ -19,16 +20,16 @@ enum GameState {
 class GameMaster {
 public:
     GameMaster();
+    ~GameMaster();
     void draw();
     void updateGameState(GameState newState);
-    void SpecialKey(int key , int x, int y);
+    void SpecialKey(int key, int x, int y);
     void keyChar(unsigned char key);
     void GoToMainMenu();
     void StartSurvivalMode();
     void StartTimeMode();
     void EndGameOver();
     void Update();
-
 
 private:
     GameState state;
@@ -39,13 +40,13 @@ private:
     int score;
     const int WINDOW_WIDTH = 1300;
     const int WINDOW_HEIGHT = 800;
-    std::vector<GameObject> gameObjects;
+    std::vector<GameObject*> gameObjects;
     void DrawMainMenu();
     void DrawSurvivalMode();
     void DrawTimeMode();
     void DrawGameOver();
     void DrawScene();
-
+    void clearGameObjects();
 };
 
 #endif

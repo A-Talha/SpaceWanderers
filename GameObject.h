@@ -16,6 +16,8 @@ public:
     // Constructors
     GameObject(ObjectType type);
 
+    virtual void draw();
+
     // Public member functions
     void setPosition(float x, float y, float z);
     void setRotation(float angle, float x, float y, float z);
@@ -40,7 +42,6 @@ public:
     std::vector<float> getVertices();
     std::vector<float> getVerticesTranformed();
 
-    virtual void draw();
 
 private:
     // Private member variables

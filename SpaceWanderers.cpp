@@ -21,7 +21,7 @@ void Update() {
 void initOpenGL() {
     gameMaster.StartSurvivalMode();
     //gameMaster.goToMainMenu();
-    glutIdleFunc(Update);
+    //glutIdleFunc(Update);
 }
 
 

@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include <GL/freeglut.h>
 #include <math.h>
+#include <iostream>
 
 GameObject::GameObject(ObjectType type) : type(type), texture(0), shader(0) {
     setPosition(0.0f, 0.0f, 0.0f);
