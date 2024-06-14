@@ -18,6 +18,12 @@ public:
     //update function for the enemy ship takes the player's position as a parameter array of floats and takes a vector of planets as a parameter
     void update(float playerPosition[3], std::vector<Planet*> planets, std::vector<EnemyShip*> enemyShips);
 
+    //getters and setters for the id of the enemy ship
+    int getId() ;
+    void setId(int id) ;
+private:
+    int id;
+
 };
 
 #endif

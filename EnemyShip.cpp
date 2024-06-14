@@ -99,3 +99,11 @@ void EnemyShip::update(float playerPosition[3], std::vector<Planet*> planets ,st
     setDirection(playerPosition);
     move(playerPosition, planets,enemyShips);
 }
+
+int EnemyShip::getId() {
+    return id;
+}
+
+void EnemyShip::setId(int id) {
+    this->id = id;
+}

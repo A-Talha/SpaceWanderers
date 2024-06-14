@@ -40,12 +40,23 @@ public:
 private:
     GameState state;
     SpaceShip spaceship;
-    Planet sun;
     std::vector<float> SUN_POSITION = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
     std::vector<float> SUN_COLOR = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
-    int score;
     const int WINDOW_WIDTH = 1300;
     const int WINDOW_HEIGHT = 800;
+    int score;
+    int currentID;
+    int maxNumberOfEnemies;
+    int maxNumberOfEnemiesToSpawned;
+    int CurrentNumberOfEnemies;
+    int CurrentNumberOfEnemiesKilled;
+    float startTime;
+    float currentTime;
+    float TimeLimit;
+    float lastTimeEnemySpawned;
+    float intervalTimeToSpawnEnemy;
+    std::vector<float> colors;
+    std::vector<float> enemyColors;
     std::vector<GameObject*> gameObjects;
     std::vector<EnemyShip*> enemyShips;
     std::vector<Planet*> planets;
@@ -55,6 +66,7 @@ private:
     void DrawGameOver();
     void DrawScene();
     void clearGameObjects();
+    void createEnemyShip(int id,std::vector<float> Vertices, std::vector<float> Colors);
 };
 
 #endif
