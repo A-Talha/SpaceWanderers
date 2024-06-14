@@ -54,21 +54,25 @@ void GameMaster::SpecialKey(int key, int x, int y) {
     switch (key) {
     case GLUT_KEY_UP:
         spaceship.moveForward();
+        checkSpaceShipwithinBoundaries();
         spaceship.updateFirstPersonView();
         spaceship.updateThirdPersonView();
         break;
     case GLUT_KEY_DOWN:
         spaceship.moveBackward();
+        checkSpaceShipwithinBoundaries();
         spaceship.updateFirstPersonView();
         spaceship.updateThirdPersonView();
         break;
     case GLUT_KEY_LEFT:
         spaceship.moveLeft();
+        checkSpaceShipwithinBoundaries();
         spaceship.updateFirstPersonView();
         spaceship.updateThirdPersonView();
         break;
     case GLUT_KEY_RIGHT:
         spaceship.moveRight();
+        checkSpaceShipwithinBoundaries();
         spaceship.updateFirstPersonView();
         spaceship.updateThirdPersonView();
         break;
@@ -593,7 +597,37 @@ void GameMaster::createEnemyShip(int id, std::vector<float> Vertices, std::vecto
     // Create an enemy ship with the given ID
     EnemyShip* enemy = new EnemyShip();
     enemy->setId(id);
-    enemy->setPosition(1000.0f * (rand() % 10 - 5), 1000.0f, 1000.0f * (rand() % 10 - 5));
+    // Set the enemy ship's position to a random location
+    // within a 20000x2000x20000 cube centered at the origin
+    // (the sun is at the origin)
+    // The enemy ship will be at least 600 + planets radius units away from all planets use planets vector to check
+    //the distance between the enemy ship and the player ship should be at least 1500 units
+    // write the code here
+    float x = rand() % 20000 - 10000;
+    float y = 1000;
+    float z = rand() % 20000 - 10000;
+    // check if the enemy ship is away from the planets by at least 600 units + planet radius
+    for (Planet* planet : planets) {
+        float distance = sqrt(pow(x - planet->getPositionX(), 2) + pow(z - planet->getPositionZ(), 2));
+        if (distance < 600 + planet->getPlanetRadius()) {
+            // The enemy ship is too close to a planet, so move it further away
+            x = rand() % 20000 - 10000;
+            z = rand() % 20000 - 10000;
+            // Restart the loop to check the new position
+            planet = planets[0];
+        }
+    }
+    // check if the enemy ship is away from the player ship by at least 1500 units
+
+    float distance = sqrt(pow(x - spaceship.getPositionX(), 2) + pow(z - spaceship.getPositionZ(), 2));
+    if (distance < 1500) {
+        // The enemy ship is too close to the player ship, so move it further away
+        x = rand() % 20000 - 10000;
+        z = rand() % 20000 - 10000;
+    }
+
+    enemy->setPosition(x, y, z);
+
     enemy->setScale(1.0f, 1.0f, 1.0f);
     enemy->setMoveSpeed(10.0f);
     enemy->setRotationSpeed(5.0f);
@@ -603,4 +637,23 @@ void GameMaster::createEnemyShip(int id, std::vector<float> Vertices, std::vecto
     enemy->setWeaponPower(10);
     enemyShips.push_back(enemy);
     gameObjects.push_back(enemy);
+}
+
+void GameMaster::checkSpaceShipwithinBoundaries() {
+    // Check if the spaceship is within the boundaries of the game world
+    // If the spaceship goes outside the boundaries, reset its position
+    // to the center of the game world
+    // write the code here
+    if (spaceship.getPositionX() > 10000) {
+        spaceship.setPosition(10000, spaceship.getPositionY(), spaceship.getPositionZ());
+    }
+    else if (spaceship.getPositionX() < -10000) {
+        spaceship.setPosition(-10000, spaceship.getPositionY(), spaceship.getPositionZ());
+    }
+    if (spaceship.getPositionZ() > 10000) {
+        spaceship.setPosition(spaceship.getPositionX(), spaceship.getPositionY(), 10000);
+    }
+    else if (spaceship.getPositionZ() < -10000) {
+        spaceship.setPosition(spaceship.getPositionX(), spaceship.getPositionY(), -10000);
+    }
 }

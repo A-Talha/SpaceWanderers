@@ -67,6 +67,7 @@ private:
     void DrawScene();
     void clearGameObjects();
     void createEnemyShip(int id,std::vector<float> Vertices, std::vector<float> Colors);
+    void checkSpaceShipwithinBoundaries();
 };
 
 #endif

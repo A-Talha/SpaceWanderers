@@ -53,7 +53,7 @@ void EnemyShip::move(float playerPosition[3], std::vector<Planet*> planets, std:
     if (avoidMagnitude > 0.0f) {
         avoidDirection[0] /= avoidMagnitude;
         avoidDirection[2] /= avoidMagnitude;
-        moveInDirection(avoidDirection, 3.5f);
+        moveInDirection(avoidDirection, 4.0f);
     }
 
     // Move towards the player to maintain exactly 1500 units distance
@@ -67,7 +67,7 @@ void EnemyShip::move(float playerPosition[3], std::vector<Planet*> planets, std:
         direction[0] /= magnitude;
         direction[2] /= magnitude;
         float adjustment = (magnitude - 1500.0f) / magnitude; // Adjust proportionally to the speed
-        moveInDirection(direction, adjustment * 2.0f); // Adjust speed as needed
+        moveInDirection(direction, adjustment * 3.5f); // Adjust speed as needed
     }
 }
 
