@@ -20,7 +20,6 @@ void Update() {
 // Function to initialize OpenGL settings
 void initOpenGL() {
     gameMaster.GoToMainMenu();
-
     glutIdleFunc(Update);
 }
 
@@ -33,16 +32,7 @@ void display() {
 
 // Function to handle window resizing
 void reshape(int width, int height) {
-    // Set the viewport to cover the new window size
-    glViewport(0, 0, width, height);
 
-    // Set the projection matrix
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0, (double)width / (double)height, 1.0, 20000.0);
-
-    // Switch back to the modelview matrix
-    glMatrixMode(GL_MODELVIEW);
 }
 
 // Function to handle keyboard input
