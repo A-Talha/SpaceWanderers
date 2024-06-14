@@ -9,6 +9,11 @@
 #include "GameObject.h"
 #include "SpaceShip.h"
 #include "Planet.h"
+#include "EnemyShip.h"
+#include "UI_Functions.h"
+#include <iostream>
+
+using namespace std;
 
 enum GameState {
     MAIN_MENU,
@@ -23,6 +28,7 @@ public:
     ~GameMaster();
     void draw();
     void updateGameState(GameState newState);
+    void processMouse(int button, int state, int x, int y);
     void SpecialKey(int key, int x, int y);
     void keyChar(unsigned char key);
     void GoToMainMenu();

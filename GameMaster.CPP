@@ -1,4 +1,7 @@
 #include "GameMaster.h"
+#include <iostream>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 
 GameMaster::GameMaster() {
     state = MAIN_MENU; // Initial game state
@@ -61,6 +64,33 @@ void GameMaster::SpecialKey(int key, int x, int y) {
     }
 }
 
+void GameMaster::processMouse(int button, int state, int x, int y) {
+     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    {
+        // Convert window coordinates to OpenGL coordinates
+        int oglY = WINDOW_HEIGHT - y;
+
+        // Check if the click is within the "Survival Mode" option area
+        if (x >= 300 && x <= 500 && oglY >= 280 && oglY <= 310)
+        {
+            std::cout << "Survival Mode clicked!" << std::endl;
+            StartSurvivalMode();
+        }
+        // Check if the click is within the "Time Attack Mode" option area
+        else if (x >= 300 && x <= 500 && oglY >= 230 && oglY <= 260)
+        {
+            std::cout << "Time Attack Mode clicked!" << std::endl;
+            StartTimeMode();
+        }
+        // Check if the click is within the "Exit" option area
+        else if (x >= 300 && x <= 500 && oglY >= 180 && oglY <= 210)
+        {
+            std::cout << "Exit clicked!" << std::endl;
+            exit(0);
+        }
+    }
+}
+
 void GameMaster::keyChar(unsigned char key) {
     switch (key) {
     case 27: // ESC key
@@ -85,7 +115,17 @@ void GameMaster::GoToMainMenu() {
 }
 
 void GameMaster::StartSurvivalMode() {
-    const float SUN_POSITION1[] = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
+    // Set the viewport to cover the new window size
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // Set the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (double)WINDOW_WIDTH / (double)WINDOW_HEIGHT, 1.0, 20000.0);
+
+    // Switch back to the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    const float SUN_POSITION1[] = {0.0f, 1800.0f, 0.0f, 1.0f}; // x, y, z, w
     const float SUN_COLOR1[] = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
 
     // Clear any existing game objects
@@ -126,26 +166,44 @@ void GameMaster::StartSurvivalMode() {
     spaceship.setPosition(0.0f, 1000.0f, 2000.0f);
     spaceship.setScale(1.0f, 1.0f, 1.0f);
 
-    // Define spaceship vertices (simple triangle)
+    // Define spaceship vertices (simple Cuboid)
     std::vector<float> spaceshipVertices = {
-        0.0f, 100.0f, 0.0f,
-        -100.0f, -100.0f, 100.0f,
-        100.0f, -100.0f, 100.0f,
-        0.0f, 100.0f, 0.0f,
-        100.0f, -100.0f, 100.0f,
-        100.0f, -100.0f, -100.0f,
-        0.0f, 100.0f, 0.0f,
-        100.0f, -100.0f, -100.0f,
-        -100.0f, -100.0f, -100.0f,
-        0.0f, 100.0f, 0.0f,
-        -100.0f, -100.0f, -100.0f,
-        -100.0f, -100.0f, 100.0f
+        -200.0f,75.0f,-400.0f,
+        -200.0f,-75.0f,-400.0f,
+        200.0f,-75.0f,-400.0f,
+        200.0f,75.0f,-400.0f,
+        200.0f,-75.0f,-400.0f,
+        200.0f,75.0f,-400.0f,
+        200.0f,75.0f,400.0f,
+        200.0f,-75.0f,400.0f,
+        200.0f,75.0f,400.0f,
+        200.0f,-75.0f,400.0f,
+        -200.0f,-75.0f,400.0f,
+        -200.0f,75.0f,400.0f,
+        -200.0f,-75.0f,400.0f,
+        -200.0f,75.0f,400.0f,
+        -200.0f,75.0f,-400.0f,
+        -200.0f,-75.0f,-400.0f,
+        -200.0f,75.0f,-400.0f,
+        200.0f,75.0f,-400.0f,
+        200.0f,75.0f,400.0f,
+        -200.0f,75.0f,400.0f,
+        -200.0f,-75.0f,-400.0f,
+        200.0f,-75.0f,-400.0f,
+        200.0f,-75.0f,400.0f,
+        -200.0f,-75.0f,400.0f
     };
     std::vector<float> colors;
     for (int i = 0; i < spaceshipVertices.size(); i++) {
         colors.push_back(0);
         colors.push_back(0.9);
         colors.push_back(0.9);
+    }
+    std::vector<float> enemyColors;//the opposite of spaceship colors
+    for (int i = 0; i < spaceshipVertices.size(); i++) {
+        enemyColors.push_back(0.9);
+        enemyColors.push_back(0);
+        enemyColors.push_back(0);
     }
 
     spaceship.setVertices(spaceshipVertices);
@@ -154,6 +212,18 @@ void GameMaster::StartSurvivalMode() {
     spaceship.updateThirdPersonView();
 
     gameObjects.push_back(&spaceship);
+
+    //create the enemies
+    for (int i = 0; i < 5; i++) {
+        EnemyShip* enemy = new EnemyShip();
+        enemy->setPosition(1000.0f * (rand() % 10 - 5), 1000.0f, 1000.0f * (rand() % 10 - 5));
+        enemy->setScale(1.0f, 1.0f, 1.0f);
+        enemy->setMoveSpeed(10.0f);
+        enemy->setRotationSpeed(5.0f);
+        enemy->setVertices(spaceshipVertices);
+        enemy->setColors(enemyColors);
+        gameObjects.push_back(enemy);
+    }
     
     updateGameState(SURVIVAL_MODE);
 }
@@ -167,7 +237,39 @@ void GameMaster::EndGameOver() {
 }
 
 void GameMaster::DrawMainMenu() {
-    // Draw the main menu
+    // Clear color and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // Set the viewport
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    
+    // Reset the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, WINDOW_WIDTH, 0.0, WINDOW_HEIGHT);
+    
+    // Reset the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    // Draw the square
+    glPushMatrix();
+    glColor3f(1.0f, 0.0f, 0.0f); // Red color
+    drawStrokedText("Space Wanderers", 250.0f, 450.0f, 0.3f);
+
+    // Draw the menu options with background rectangles
+    glColor3f(0.0f, 0.0f, 0.8f);                  // Blue color
+    drawRectangle(300.0f, 280.0f, 200.0f, 30.0f); // Survival Mode button
+    drawRectangle(300.0f, 230.0f, 200.0f, 30.0f); // Time Attack Mode button
+    drawRectangle(300.0f, 180.0f, 200.0f, 30.0f); // Exit button
+
+    glColor3f(1.0f, 1.0f, 1.0f); // White color for text
+    drawText("1. Survival Mode", 320.0f, 290.0f, GLUT_BITMAP_HELVETICA_18);
+    drawText("2. Time Attack Mode", 320.0f, 240.0f, GLUT_BITMAP_HELVETICA_18);
+    drawText("3. Exit", 320.0f, 190.0f, GLUT_BITMAP_HELVETICA_18);
+    glPopMatrix();
+    
+    // Swap buffers
+    glutSwapBuffers();
 }
 
 void GameMaster::DrawSurvivalMode() {
@@ -230,4 +332,14 @@ void GameMaster::DrawScene() {
 
 void GameMaster::Update() {
     // Update game logic
+    for (GameObject* obj : gameObjects) {
+        if (obj->getType() == ObjectType::ENEMYSHIP) {
+            EnemyShip* enemy = dynamic_cast<EnemyShip*>(obj);
+            float playerPosition[3] = {spaceship.getPositionX(), spaceship.getPositionY(), spaceship.getPositionZ()};
+            enemy->update(playerPosition);
+        }
+        else {
+            obj->update();
+        }
+    }
 }

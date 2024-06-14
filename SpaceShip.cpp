@@ -7,6 +7,11 @@ SpaceShip::SpaceShip()
     // Additional initialization if needed
 }
 
+SpaceShip::SpaceShip(ObjectType type)
+    : GameObject(type), weaponPower(100), moveSpeed(100.0f), rotationSpeed(5.0f) {
+    // Additional initialization if needed
+}
+
 void SpaceShip::fireWeapon() {
     std::cout << "Firing weapon with power: " << weaponPower << std::endl;
     // Implement the firing logic here
@@ -54,13 +59,13 @@ void SpaceShip::RotateLeft() {
 
 void SpaceShip::updateFirstPersonView() {
     // Implement the first person view logic here
-    firstPersonCameraPosition[0] = getPositionX() + 105 * sin(-getRotationAngle() * 3.14159 / 180);
+    firstPersonCameraPosition[0] = getPositionX() + 405 * sin(-getRotationAngle() * 3.14159 / 180);
     firstPersonCameraPosition[1] = getPositionY();
-    firstPersonCameraPosition[2] = getPositionZ() - 105 * cos(-getRotationAngle() * 3.14159 / 180);
+    firstPersonCameraPosition[2] = getPositionZ() - 405 * cos(-getRotationAngle() * 3.14159 / 180);
 
-    firstPersonLookAt[0] = getPositionX() + 155 * sin(-getRotationAngle() * 3.14159 / 180);
+    firstPersonLookAt[0] = getPositionX() + 455 * sin(-getRotationAngle() * 3.14159 / 180);
     firstPersonLookAt[1] = getPositionY();
-    firstPersonLookAt[2] = getPositionZ() - 155 * cos(-getRotationAngle() * 3.14159 / 180);
+    firstPersonLookAt[2] = getPositionZ() - 455 * cos(-getRotationAngle() * 3.14159 / 180);
 }
 
 void SpaceShip::updateThirdPersonView() {
@@ -89,4 +94,38 @@ std::vector<float> SpaceShip::getThirdPersonCameraPosition() {
 std::vector<float> SpaceShip::getThirdPersonLookAt() {
     return thirdPersonLookAt;
 }
+
+int SpaceShip::getWeaponPower() {
+    return weaponPower;
+}
+
+int SpaceShip::getHealth() {
+    return health;
+}
+
+float SpaceShip::getMoveSpeed() {
+    return moveSpeed;
+}
+
+float SpaceShip::getRotationSpeed() {
+    return rotationSpeed;
+}
+
+void SpaceShip::setWeaponPower(int power) {
+    weaponPower = power;
+}
+
+void SpaceShip::setHealth(int h) {
+    health = h;
+}
+
+void SpaceShip::setMoveSpeed(float speed) {
+    moveSpeed = speed;
+}
+
+void SpaceShip::setRotationSpeed(float speed) {
+    rotationSpeed = speed;
+}
+
+
 

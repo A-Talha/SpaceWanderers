@@ -19,9 +19,9 @@ void Update() {
 
 // Function to initialize OpenGL settings
 void initOpenGL() {
-    gameMaster.StartSurvivalMode();
-    //gameMaster.goToMainMenu();
-    //glutIdleFunc(Update);
+    gameMaster.GoToMainMenu();
+
+    glutIdleFunc(Update);
 }
 
 
@@ -57,6 +57,12 @@ void specialKeys(int key, int x, int y) {
     glutPostRedisplay();
 }
 
+// Function to handle mouse input
+void mouse(int button, int state, int x, int y) {
+    gameMaster.processMouse(button, state, x, y);
+    glutPostRedisplay();
+}
+
 // Main function
 int main(int argc, char** argv) {
     // Initialize GLUT
@@ -82,6 +88,7 @@ int main(int argc, char** argv) {
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKeys);
+    glutMouseFunc(mouse);
 
     // Start the main loop
     glutMainLoop();

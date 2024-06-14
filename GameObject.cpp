@@ -63,12 +63,13 @@ void GameObject::draw(){
         glEnable(GL_TEXTURE_3D);
     }
 
-    glBegin(GL_TRIANGLES);
+    glBegin(GL_QUADS);
     for (size_t i = 0; i < vertices.size(); i += 3) {
         glColor3f(colors[i*3], colors[i*3+1], colors[i*3+2]);
         glVertex3f(vertices[i], vertices[i + 1], vertices[i + 2]);
     }
     glEnd();
+    
 
     if (texture) {
         glDisable(GL_TEXTURE_2D);
@@ -157,4 +158,18 @@ std::vector<float> GameObject::getVerticesTranformed() {
     }
 
     return transformedVertices;
+}
+
+ObjectType GameObject::getType() {
+    return type;
+}
+
+//empty update function
+void GameObject::update() {
+    // Do nothing by default
+}
+
+//empty update function
+void GameObject::update(float playerPosition[3]) {
+    // Do nothing by default
 }

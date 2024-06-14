@@ -8,6 +8,7 @@
 enum ObjectType {
     PLANET,
     SPACESHIP,
+    ENEMYSHIP,
     OTHER
 };
 
@@ -17,6 +18,9 @@ public:
     GameObject(ObjectType type);
 
     virtual void draw();
+    virtual void update();
+    virtual void update(float playerPosition[3]);
+    
 
     // Public member functions
     void setPosition(float x, float y, float z);
@@ -39,6 +43,8 @@ public:
     float getScaleX();
     float getScaleY();
     float getScaleZ();
+    //get type
+    ObjectType getType();
     std::vector<float> getVertices();
     std::vector<float> getVerticesTranformed();
 
