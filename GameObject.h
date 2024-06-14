@@ -9,6 +9,7 @@ enum ObjectType {
     PLANET,
     SPACESHIP,
     ENEMYSHIP,
+    FIREBULLET,
     OTHER
 };
 
@@ -49,8 +50,8 @@ public:
     //get type
     ObjectType getType();
     std::vector<float> getVertices();
+    std::vector<float> getColors();
     std::vector<float> getVerticesTranformed();
-
 
 private:
     // Private member variables
@@ -60,10 +61,6 @@ private:
     float scale[3];
     std::vector<float> vertices;
     std::vector<float> colors;
-    
-
-    // Private member functions
-    
 };
 
 #endif

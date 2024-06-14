@@ -1,6 +1,7 @@
 #include "SpaceShip.h"
 #include <iostream>
 #include <cmath>
+#include "FireBullet.h"
 
 SpaceShip::SpaceShip()
     : GameObject(SPACESHIP), weaponPower(100), moveSpeed(100.0f), rotationSpeed(5.0f) {
@@ -12,9 +13,10 @@ SpaceShip::SpaceShip(ObjectType type)
     // Additional initialization if needed
 }
 
-void SpaceShip::fireWeapon() {
+void SpaceShip::fireWeapon(std::vector<GameObject*>& gameObjectsRef) {
     std::cout << "Firing weapon with power: " << weaponPower << std::endl;
-    // Implement the firing logic here
+    FireBullet* fireBullet = new FireBullet(weaponPower, getFirstPersonCameraPosition(), getFirstPersonLookAt());
+    gameObjectsRef.push_back(fireBullet);
 }
 
 #include "SpaceShip.h"

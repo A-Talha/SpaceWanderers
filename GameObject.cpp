@@ -126,6 +126,10 @@ std::vector<float> GameObject::getVertices() {
     return vertices;
 }
 
+std::vector<float> GameObject::getColors() {
+    return colors;
+}
+
 std::vector<float> GameObject::getVerticesTranformed() {
     // Create a deep copy of vertices
     std::vector<float> transformedVertices = vertices;

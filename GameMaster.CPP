@@ -120,6 +120,10 @@ void GameMaster::keyChar(unsigned char key) {
         spaceship.updateFirstPersonView();
         spaceship.updateThirdPersonView();
         break;
+    case ' ':
+        // invoke space ship fire weapon and pass game object as a reference
+        spaceship.fireWeapon(gameObjects);
+        break;
     // Add more key controls here for your game
     }
 }

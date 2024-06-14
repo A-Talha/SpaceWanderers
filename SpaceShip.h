@@ -11,7 +11,7 @@ public:
 
     // Additional methods specific to SpaceShip
     void draw() override;
-    void fireWeapon();
+    void fireWeapon(std::vector<GameObject*>& gameObjects);
     void moveForward();
     void moveBackward();
     void moveLeft();
