@@ -1,17 +1,80 @@
 //EnemyShip.cpp
 #include "EnemyShip.h"
-#include <math.h>
+
+
 
 EnemyShip::EnemyShip()
     : SpaceShip(ENEMYSHIP) {
     // Additional initialization if needed
 }
 
-void EnemyShip::move(float playerPosition[3]) {
-    // Implement enemy ship movement logic here
-    // For example, move towards the player's position
-    // You can access the player's position using the playerPosition array
+void EnemyShip::move(float playerPosition[3], std::vector<Planet*> planets, std::vector<EnemyShip*> enemyShips) {
+    // Function to normalize a direction vector and move the enemy ship only in the x and z axes
+    auto moveInDirection = [this](float direction[3], float speed) {
+        // Only consider x and z components for magnitude
+        float magnitude = sqrt(direction[0] * direction[0] + direction[2] * direction[2]);
+        if (magnitude > 0.0f) {
+            direction[0] /= magnitude;
+            direction[2] /= magnitude;
+            setPosition(getPositionX() + direction[0] * speed, getPositionY(), getPositionZ() + direction[2] * speed);
+        }
+    };
+
+    // Avoid other enemy ships
+    float avoidDirection[3] = {0.0f, 0.0f, 0.0f};
+    for (EnemyShip* enemy : enemyShips) {
+        if (enemy != this) { // Avoid self-comparison
+            float distance = sqrt(pow(enemy->getPositionX() - getPositionX(), 2) + pow(enemy->getPositionZ() - getPositionZ(), 2));
+            if (distance < 900.0f) { // Threshold distance to avoid
+                avoidDirection[0] += getPositionX() - enemy->getPositionX();
+                avoidDirection[2] += getPositionZ() - enemy->getPositionZ();
+            }
+        }
+    }
+
+    // Avoid planets
+    float closestDistance = 1000000.0f;
+    Planet* closestPlanet = nullptr;
+    for (Planet* planet : planets) {
+        float distance = sqrt(pow(planet->getPositionX() - getPositionX(), 2) + pow(planet->getPositionZ() - getPositionZ(), 2));
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestPlanet = planet;
+        }
+    }
+
+    if (closestPlanet && closestDistance < 600 + closestPlanet->getPlanetRadius()) {
+        avoidDirection[0] += getPositionX() - closestPlanet->getPositionX();
+        avoidDirection[2] += getPositionZ() - closestPlanet->getPositionZ();
+    }
+
+    // Normalize and apply avoidance direction if needed
+    float avoidMagnitude = sqrt(avoidDirection[0] * avoidDirection[0] + avoidDirection[2] * avoidDirection[2]);
+    if (avoidMagnitude > 0.0f) {
+        avoidDirection[0] /= avoidMagnitude;
+        avoidDirection[2] /= avoidMagnitude;
+        moveInDirection(avoidDirection, 3.5f);
+    }
+
+    // Move towards the player to maintain exactly 1500 units distance
+    float direction[3] = {
+        playerPosition[0] - getPositionX(),
+        0.0f, // Ignore y-axis movement
+        playerPosition[2] - getPositionZ()
+    };
+    float magnitude = sqrt(direction[0] * direction[0] + direction[2] * direction[2]);
+    if (magnitude != 1500.0f) {
+        direction[0] /= magnitude;
+        direction[2] /= magnitude;
+        float adjustment = (magnitude - 1500.0f) / magnitude; // Adjust proportionally to the speed
+        moveInDirection(direction, adjustment * 2.0f); // Adjust speed as needed
+    }
 }
+
+
+
+
+
 
 void EnemyShip::setDirection(float playerPosition[3]) {
     //get the direction vector from the enemy ship to the player
@@ -32,7 +95,7 @@ void EnemyShip::setDirection(float playerPosition[3]) {
     setRotation(angle, 0.0f, 1.0f, 0.0f);
 }
 
-void EnemyShip::update(float playerPosition[3]) {
+void EnemyShip::update(float playerPosition[3], std::vector<Planet*> planets ,std::vector<EnemyShip*> enemyShips){
     setDirection(playerPosition);
-    move(playerPosition);
+    move(playerPosition, planets,enemyShips);
 }

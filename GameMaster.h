@@ -47,6 +47,8 @@ private:
     const int WINDOW_WIDTH = 1300;
     const int WINDOW_HEIGHT = 800;
     std::vector<GameObject*> gameObjects;
+    std::vector<EnemyShip*> enemyShips;
+    std::vector<Planet*> planets;
     void DrawMainMenu();
     void DrawSurvivalMode();
     void DrawTimeMode();

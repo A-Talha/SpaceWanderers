@@ -17,6 +17,14 @@ void GameMaster::clearGameObjects() {
         obj = nullptr;
     }
     gameObjects.clear();
+    for (EnemyShip* enemy : enemyShips) {
+        enemy = nullptr;
+    }
+    enemyShips.clear();
+    for (Planet* planet : planets) {
+        planet = nullptr;
+    }
+    planets.clear();
     std::cout << "Game objects cleared." << std::endl;
 }
 
@@ -160,6 +168,7 @@ void GameMaster::StartSurvivalMode() {
     sun.setCenter(SUN_POSITION);
     sun.setPlanetColor(SUN_COLOR);
     gameObjects.push_back(&sun);
+    planets.push_back(&sun);
 
     // Set the background color to black
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -246,6 +255,7 @@ void GameMaster::StartSurvivalMode() {
         enemy->setVertices(spaceshipVertices);
         enemy->setColors(enemyColors);
         gameObjects.push_back(enemy);
+        enemyShips.push_back(enemy);
     }
 
     updateGameState(SURVIVAL_MODE);
@@ -368,7 +378,7 @@ void GameMaster::Update() {
         if (obj->getType() == ObjectType::ENEMYSHIP) {
             EnemyShip* enemy = dynamic_cast<EnemyShip*>(obj);
             float playerPosition[3] = {spaceship.getPositionX(), spaceship.getPositionY(), spaceship.getPositionZ()};
-            enemy->update(playerPosition);
+            enemy->update(playerPosition, planets, enemyShips);
         } else {
             obj->update();
         }
