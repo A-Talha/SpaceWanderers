@@ -92,7 +92,7 @@ void EnemyShip::setDirection(float playerPosition[3]) {
 
     //set the rotation of the enemy ship to face the player
     float angle = atan2(direction[0], direction[2]) * 180 / 3.14159;
-    setRotation(angle, 0.0f, 1.0f, 0.0f);
+    setRotation(angle+180, 0.0f, 1.0f, 0.0f);
 }
 
 void EnemyShip::update(float playerPosition[3], std::vector<Planet*> planets ,std::vector<EnemyShip*> enemyShips){

@@ -10,6 +10,7 @@ public:
     SpaceShip(ObjectType type);
 
     // Additional methods specific to SpaceShip
+    void draw() override;
     void fireWeapon();
     void moveForward();
     void moveBackward();

@@ -20,6 +20,8 @@ public:
     virtual void draw();
     virtual void update();
     virtual void update(float playerPosition[3]);
+    GLuint texture;
+    GLuint shader;
     
 
     // Public member functions
@@ -43,6 +45,7 @@ public:
     float getScaleX();
     float getScaleY();
     float getScaleZ();
+    void applyTransformations();
     //get type
     ObjectType getType();
     std::vector<float> getVertices();
@@ -57,11 +60,10 @@ private:
     float scale[3];
     std::vector<float> vertices;
     std::vector<float> colors;
-    GLuint texture;
-    GLuint shader;
+    
 
     // Private member functions
-    void applyTransformations();
+    
 };
 
 #endif

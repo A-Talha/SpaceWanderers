@@ -17,6 +17,137 @@ void SpaceShip::fireWeapon() {
     // Implement the firing logic here
 }
 
+#include "SpaceShip.h"
+#include <GL/freeglut.h>
+#include <iostream>
+
+#include "SpaceShip.h"
+#include <GL/freeglut.h>
+#include <iostream>
+
+#include "SpaceShip.h"
+#include <GL/freeglut.h>
+#include <iostream>
+
+void SpaceShip::draw() {
+    // Call the base class GameObject draw function
+    GameObject::draw();
+
+    // Apply transformations
+    glPushMatrix();
+    applyTransformations();
+
+    // Draw the main body (cuboid)
+    glColor3f(0.8f, 0.0f, 0.0f); // Red color for the main body
+    glBegin(GL_QUADS);
+    // Front face
+    glVertex3f(-200.0f, 75.0f, -400.0f);
+    glVertex3f(200.0f, 75.0f, -400.0f);
+    glVertex3f(200.0f, -75.0f, -400.0f);
+    glVertex3f(-200.0f, -75.0f, -400.0f);
+    // Back face
+    glVertex3f(-200.0f, 75.0f, 400.0f);
+    glVertex3f(200.0f, 75.0f, 400.0f);
+    glVertex3f(200.0f, -75.0f, 400.0f);
+    glVertex3f(-200.0f, -75.0f, 400.0f);
+    // Top face
+    glVertex3f(-200.0f, 75.0f, -400.0f);
+    glVertex3f(200.0f, 75.0f, -400.0f);
+    glVertex3f(200.0f, 75.0f, 400.0f);
+    glVertex3f(-200.0f, 75.0f, 400.0f);
+    // Bottom face
+    glVertex3f(-200.0f, -75.0f, -400.0f);
+    glVertex3f(200.0f, -75.0f, -400.0f);
+    glVertex3f(200.0f, -75.0f, 400.0f);
+    glVertex3f(-200.0f, -75.0f, 400.0f);
+    // Left face
+    glVertex3f(-200.0f, 75.0f, -400.0f);
+    glVertex3f(-200.0f, -75.0f, -400.0f);
+    glVertex3f(-200.0f, -75.0f, 400.0f);
+    glVertex3f(-200.0f, 75.0f, 400.0f);
+    // Right face
+    glVertex3f(200.0f, 75.0f, -400.0f);
+    glVertex3f(200.0f, -75.0f, -400.0f);
+    glVertex3f(200.0f, -75.0f, 400.0f);
+    glVertex3f(200.0f, 75.0f, 400.0f);
+    glEnd();
+
+    // Draw cockpit
+    glColor3f(0.0f, 0.5f, 0.5f); // Cyan color for cockpit
+    glBegin(GL_QUADS);
+    glVertex3f(-50.0f, 75.0f, -250.0f);
+    glVertex3f(50.0f, 75.0f, -250.0f);
+    glVertex3f(50.0f, 150.0f, -150.0f);
+    glVertex3f(-50.0f, 150.0f, -150.0f);
+    glEnd();
+
+    // Draw wings
+    glColor3f(0.5f, 0.5f, 0.5f); // Gray color for wings
+    glBegin(GL_TRIANGLES);
+    // Left wing
+    glVertex3f(-200.0f, 0.0f, -100.0f);
+    glVertex3f(-400.0f, 0.0f, 0.0f);
+    glVertex3f(-200.0f, 0.0f, 100.0f);
+    // Right wing
+    glVertex3f(200.0f, 0.0f, -100.0f);
+    glVertex3f(400.0f, 0.0f, 0.0f);
+    glVertex3f(200.0f, 0.0f, 100.0f);
+    glEnd();
+
+    // Draw engines
+    glColor3f(0.8f, 0.0f, 0.0f); // Red color for engines
+    glBegin(GL_QUADS);
+    // Bottom engine
+    glVertex3f(-50.0f, -75.0f, 400.0f);
+    glVertex3f(50.0f, -75.0f, 400.0f);
+    glVertex3f(50.0f, -150.0f, 400.0f);
+    glVertex3f(-50.0f, -150.0f, 400.0f);
+    // Top engine
+    glVertex3f(-50.0f, 75.0f, 400.0f);
+    glVertex3f(50.0f, 75.0f, 400.0f);
+    glVertex3f(50.0f, 150.0f, 400.0f);
+    glVertex3f(-50.0f, 150.0f, 400.0f);
+    glEnd();
+
+    // Apply texture (optional)
+    if (texture) {
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glEnable(GL_TEXTURE_2D);
+
+        glBegin(GL_QUADS);
+        // Apply texture to front face
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-200.0f, -75.0f, -400.0f);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(200.0f, -75.0f, -400.0f);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(200.0f, 75.0f, -400.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-200.0f, 75.0f, -400.0f);
+        glEnd();
+
+        glDisable(GL_TEXTURE_2D);
+    }
+
+    // Use shader (optional)
+    if (shader) {
+        glUseProgram(shader);
+
+        // Draw the spaceship with the shader applied
+        glBegin(GL_QUADS);
+        // Example shader effect on the top face
+        glColor3f(0.0f, 0.8f, 0.8f); // Cyan color for top face
+        glVertex3f(-200.0f, 75.0f, -400.0f);
+        glVertex3f(200.0f, 75.0f, -400.0f);
+        glVertex3f(200.0f, 75.0f, 400.0f);
+        glVertex3f(-200.0f, 75.0f, 400.0f);
+        glEnd();
+
+        glUseProgram(0);
+    }
+
+    glPopMatrix();
+}
+
+
+
+
 void SpaceShip::moveForward() {
     setPosition(
         getPositionX() + moveSpeed * sin(-getRotationAngle() * 3.14159 / 180),
@@ -70,9 +201,9 @@ void SpaceShip::updateFirstPersonView() {
 
 void SpaceShip::updateThirdPersonView() {
     // Implement the third person view logic here
-    thirdPersonCameraPosition[0] = getPositionX() - 1200 * sin(-getRotationAngle() * 3.14159 / 180);
-    thirdPersonCameraPosition[1] = getPositionY() + 500;
-    thirdPersonCameraPosition[2] = getPositionZ() + 1200 * cos(-getRotationAngle() * 3.14159 / 180);
+    thirdPersonCameraPosition[0] = getPositionX() - 1500 * sin(-getRotationAngle() * 3.14159 / 180);
+    thirdPersonCameraPosition[1] = getPositionY() + 600;
+    thirdPersonCameraPosition[2] = getPositionZ() + 1500 * cos(-getRotationAngle() * 3.14159 / 180);
 
     thirdPersonLookAt[0] = getPositionX();
     thirdPersonLookAt[1] = getPositionY();

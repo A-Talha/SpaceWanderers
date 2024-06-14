@@ -156,7 +156,7 @@ void GameMaster::StartSurvivalMode() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    const float SUN_POSITION1[] = {0.0f, 1800.0f, 0.0f, 1.0f}; // x, y, z, w
+    const float SUN_POSITION1[] = {0.0f, 2500.0f, 0.0f, 1.0f}; // x, y, z, w
     const float SUN_COLOR1[] = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
 
     // Clear any existing game objects
@@ -286,7 +286,7 @@ void GameMaster::StartTimeMode() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    const float SUN_POSITION1[] = {0.0f, 1800.0f, 0.0f, 1.0f}; // x, y, z, w
+    const float SUN_POSITION1[] = {0.0f, 2500.0f, 0.0f, 1.0f}; // x, y, z, w
     const float SUN_COLOR1[] = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
 
     // Clear any existing game objects
@@ -316,7 +316,7 @@ void GameMaster::StartTimeMode() {
     glLightfv(GL_LIGHT0, GL_SPECULAR, SUN_COLOR1);
 
     // Set global ambient light
-    GLfloat globalAmbient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+    GLfloat globalAmbient[] = {0.5f, 0.5f, 0.5f, 1.0f};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
     // Enable color tracking
@@ -359,6 +359,12 @@ void GameMaster::StartTimeMode() {
         colors.push_back(0);
         colors.push_back(0.9);
         colors.push_back(0.9);
+    }
+
+    for (int i = 0; i < spaceshipVertices.size(); i++) {
+        enemyColors.push_back(0.9);
+        enemyColors.push_back(0);
+        enemyColors.push_back(0);
     }
 
     spaceship.setVertices(spaceshipVertices);
