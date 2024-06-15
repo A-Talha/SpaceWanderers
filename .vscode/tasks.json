@@ -13,7 +13,11 @@
                 "-lopengl32",
                 "-lfreeglut",
                 "-lglew32",
-                "-lglu32"
+                "-lglu32",
+                "-lSDL2",
+                "-lSDL2_mixer",
+                "-I", "C:\\msys64\\ucrt64\\include\\SDL2",
+                "-L", "C:\\msys64\\ucrt64\\lib"
             ],
             "options": {
                 "cwd": "${fileDirname}"

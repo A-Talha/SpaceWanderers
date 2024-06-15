@@ -175,9 +175,97 @@ void GameMaster::StartSurvivalMode() {
     sun->setPlanetRadius(500.0f);
     sun->setCenter(SUN_POSITION);
     sun->setPlanetColor(SUN_COLOR);
+    sun->loadTexture("images/sun.jpg");
     gameObjects.push_back(sun);
     planets.push_back(sun);
 
+    // Create mercury planet from Planet class
+    Planet* mercury = new Planet();
+    mercury->setPlanetRadius(100.0f);
+    mercury->setCenter({1150.0f, 1000.0f, 0.0f, 1.0f});
+    mercury->setOrbitRadius(1150.0f);
+    mercury->setOrbitSpeed(0.0004f);
+    mercury->setPlanetColor({0.45f, 0.44f, 0.42f, 1.0f});
+    mercury->loadTexture("images/mercury.jpg");
+    gameObjects.push_back(mercury);
+    planets.push_back(mercury);
+
+    // Create venus planet from Planet class
+    Planet* venus = new Planet();
+    venus->setPlanetRadius(150.0f);
+    venus->setCenter({2500.0f, 1000.0f, 0.0f, 1.0f});
+    venus->setOrbitRadius(2600.0f);
+    venus->setOrbitSpeed(0.0005f);
+    venus->setPlanetColor({1.0f, 0.5f, 0.0f, 1.0f});
+    venus->loadTexture("images/venus.jpg");
+    gameObjects.push_back(venus);
+    planets.push_back(venus);
+
+    // Create earth planet from Planet class
+    Planet* earth = new Planet();
+    earth->setPlanetRadius(200.0f);
+    earth->setCenter({3600.0f, 1000.0f, 0.0f, 1.0f});
+    earth->setOrbitRadius(3600.0f);
+    earth->setOrbitSpeed(0.00035f);
+    earth->setPlanetColor({0.0f, 1.0f, 1.0f, 1.0f});
+    earth->loadTexture("images/earth.jpg");
+    gameObjects.push_back(earth);
+    planets.push_back(earth);
+
+    // Create mars planet from Planet class
+    Planet* mars = new Planet();
+    mars->setPlanetRadius(180.0f);
+    mars->setCenter({4800.0f, 1000.0f, 0.0f, 1.0f});
+    mars->setOrbitRadius(4800.0f);
+    mars->setOrbitSpeed(0.0003f);
+    mars->setPlanetColor({0.9f, 0.15f, 0.05f, 1.0f});
+    mars->loadTexture("images/mars.jpg");
+    gameObjects.push_back(mars);
+    planets.push_back(mars);
+
+    // Create jupiter planet from Planet class
+    Planet* jupiter = new Planet();
+    jupiter->setPlanetRadius(400.0f);
+    jupiter->setCenter({6100.0f, 1000.0f, 0.0f, 1.0f});
+    jupiter->setOrbitRadius(6100.0f);
+    jupiter->setOrbitSpeed(0.00025f);
+    jupiter->setPlanetColor({0.8f, 0.5f, 0.3f, 1.0f});
+    jupiter->loadTexture("images/jupiter.jpg");
+    gameObjects.push_back(jupiter);
+    planets.push_back(jupiter);
+    
+    // Create saturn planet from Planet class
+    Planet* saturn = new Planet();
+    saturn->setPlanetRadius(300.0f);
+    saturn->setCenter({6900.0f, 1000.0f, 0.0f, 1.0f});
+    saturn->setOrbitRadius(6900.0f);
+    saturn->setOrbitSpeed(0.0004f);
+    saturn->setPlanetColor({0.9f, 0.8f, 0.5f, 1.0f});
+    saturn->loadTexture("images/saturn.jpg");
+    gameObjects.push_back(saturn);
+    planets.push_back(saturn);
+
+    // Create uranus planet from Planet class
+    Planet* uranus = new Planet();
+    uranus->setPlanetRadius(250.0f);
+    uranus->setCenter({7800.0f, 1000.0f, 0.0f, 1.0f});
+    uranus->setOrbitRadius(7800.0f);
+    uranus->setOrbitSpeed(0.0002f);
+    uranus->setPlanetColor({0.5f, 0.8f, 0.9f, 1.0f});
+    uranus->loadTexture("images/uranus.jpg");
+    gameObjects.push_back(uranus);
+    planets.push_back(uranus);
+
+    // Create neptune planet from Planet class
+    Planet* neptune = new Planet();
+    neptune->setPlanetRadius(200.0f);
+    neptune->setCenter({8600.0f, 1000.0f, 0.0f, 1.0f});
+    neptune->setOrbitRadius(8600.0f);
+    neptune->setOrbitSpeed(0.0003f);
+    neptune->setPlanetColor({0.0f, 0.3f, 0.8f, 1.0f});
+    neptune->loadTexture("images/neptune.jpg");
+    gameObjects.push_back(neptune);
+    planets.push_back(neptune);
 
     // Set the background color to black
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

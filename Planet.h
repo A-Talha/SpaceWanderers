@@ -9,6 +9,8 @@ class Planet : public GameObject
 public:
     Planet();
     void draw() override;
+    void update() override;
+    void loadTexture(const char* filename);
 
     // Getters
     float getPlanetRadius() const;
@@ -37,6 +39,7 @@ private:
     float rotationSpeed;
     float angle;
     float orbitAngle;
+    GLuint textureID;
     std::vector<float> center;
     std::vector<float> planetColor;
 };
