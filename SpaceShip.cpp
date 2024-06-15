@@ -7,11 +7,13 @@
 SpaceShip::SpaceShip()
     : GameObject(SPACESHIP), weaponPower(100), moveSpeed(100.0f), rotationSpeed(5.0f) {
     // Additional initialization if needed
+    bounding_sphere_radius = 400.0f;
 }
 
 SpaceShip::SpaceShip(ObjectType type)
-    : GameObject(type), weaponPower(100), moveSpeed(100.0f), rotationSpeed(5.0f) {
+    : GameObject(type), weaponPower(100), moveSpeed(100.0f), rotationSpeed(5.0f){
     // Additional initialization if needed
+    bounding_sphere_radius = 400.0f;
 }
 
 void SpaceShip::fireWeapon(std::vector<GameObject*>& gameObjectsRef) {
@@ -250,5 +252,15 @@ void SpaceShip::setRotationSpeed(float speed) {
     rotationSpeed = speed;
 }
 
+void SpaceShip::onCollisionEnter(GameObject* other){
+    if(other->getType() == PLANET){
+        GameObject::Destroy(this);
+    }
+}
 
-
+void SpaceShip::receiveDamage(int damage)
+{
+    health -= damage;
+    if(health <= 0)
+        GameObject::Destroy(this);
+}

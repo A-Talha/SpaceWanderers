@@ -13,6 +13,7 @@ public:
     // std::vector<float> calculateVertices(float radius);
     void update() override;
     void draw() override;
+    void onCollisionEnter(GameObject *other);
 
 private:
     // Additional attributes specific to FireBullet

@@ -1,4 +1,5 @@
 #include "FireBullet.h"
+#include "SpaceShip.h"
 #include <vector>
 #include <ctime>
 #include <math.h>
@@ -35,16 +36,17 @@ void FireBullet::draw()
 void FireBullet::update() {
     // check if distance between current position and initial position more than 2000 to delete the element from the gameobjects reference vetor and delete the object from memory
     float distance = std::sqrt((getPositionX() - initialPosition[0]) * (getPositionX() - initialPosition[0]) + (getPositionZ() - initialPosition[2]) * (getPositionZ() - initialPosition[2]));
-    if (distance > 15000) {
-        // Find the element in the gameObjectsRef vector and erase it
-        for (auto it = gameObjectsRef.begin(); it != gameObjectsRef.end(); ++it) {
-            if (*it == this) {
-                gameObjectsRef.erase(it);
-                break;
-            }
-        }
-        // Delete the object from memory
-        delete this;
-    }
+    if (distance > 15000) 
+        GameObject::Destroy(this);
+    
     setPosition(getPositionX() + direction[0] * moveSpeed, getPositionY(), getPositionZ() + direction[2] * moveSpeed);
+}
+
+void FireBullet::onCollisionEnter(GameObject* other){
+    if(other -> getType() == ObjectType::ENEMYSHIP)
+        ((SpaceShip *)other) -> receiveDamage(20);
+    else if(other -> getType() == ObjectType::SPACESHIP)
+        ((SpaceShip *)other) -> receiveDamage(10);
+    else if(other -> getType() == ObjectType::PLANET)
+        GameObject::Destroy(this);
 }

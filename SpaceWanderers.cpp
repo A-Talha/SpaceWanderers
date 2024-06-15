@@ -15,7 +15,7 @@ const float MAP_SIZE = 10000.0f;
 int g_hWnd;
 HGLRC g_hRC;
 //GameMaster object
-GameMaster gameMaster;
+GameMaster &gameMaster = GameMaster::GetInstance();
 
 void Update() {
     gameMaster.Update();
