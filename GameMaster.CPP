@@ -88,6 +88,7 @@ void GameMaster::draw() {
 void GameMaster::updateGameState(GameState newState) {
     std::cout << "Updating game state from " << state << " to " << newState << std::endl;
     state = newState;
+    glutPostRedisplay();
 }
 
 void GameMaster::processMouse(int button, int state, int x, int y) {
@@ -458,9 +459,11 @@ void GameMaster::EndGameOver(GameResult result) {
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     updateGameState(GAME_OVER);
+    glutPostRedisplay();
 }
 
 void GameMaster::DrawMainMenu() {
+    
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -708,6 +711,7 @@ void GameMaster::DrawTimeMode() {
 
 
 void GameMaster::DrawGameOver() {
+    std::cout << "Drawing game over" << std::endl;
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -728,31 +732,23 @@ void GameMaster::DrawGameOver() {
 
     // Draw the title
     glColor3f(1.0f, 0.0f, 0.0f); // Red color
+    float x = (WINDOW_WIDTH - 200) / 2;
+    float y = (WINDOW_HEIGHT - 50) / 2;
+
     if (result == WIN) {
-        //Draw win in the middle of the screen based on the window size WINDOW_WIDTH WINDOW_HEIGHT
-        float x = (WINDOW_WIDTH - 200) / 2;
-        float y = (WINDOW_HEIGHT - 50) / 2;
         drawStrokedText("You Win!", x, y, 0.3f);
         drawStrokedText("Press ESC to return to main menu", x - 100, y - 50, 0.2f);
     } else if (result == LOSE) {
-        //Draw lose in the middle of the screen based on the window size WINDOW_WIDTH WINDOW_HEIGHT
-        float x = (WINDOW_WIDTH - 200) / 2;
-        float y = (WINDOW_HEIGHT - 50) / 2;
         drawStrokedText("You Lose!", x, y, 0.3f);
         drawStrokedText("Press ESC to return to main menu", x - 100, y - 50, 0.2f);
-    }
-    else
-    {
-        //Draw game over in the middle of the screen based on the window size WINDOW_WIDTH WINDOW_HEIGHT
-        float x = (WINDOW_WIDTH - 200) / 2;
-        float y = (WINDOW_HEIGHT - 50) / 2;
-        drawStrokedText("Time Is UP!", x, y+50, 0.3f);
+    } else {
+        drawStrokedText("Time Is UP!", x, y + 50, 0.3f);
         drawStrokedText("Game Over!", x, y, 0.3f);
         drawStrokedText("Press ESC to return to main menu", x - 100, y - 50, 0.2f);
     }
-    
-    
-    
+
+    // Swap buffers to display the updated scene
+    glutSwapBuffers();
 }
 
 void GameMaster::DrawScene() {

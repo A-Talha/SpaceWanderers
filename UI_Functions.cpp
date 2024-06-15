@@ -4,22 +4,18 @@
 #include <iostream>
 
 
-void drawText(const char *text, float x, float y, void *font)
-{
+void drawText(const char *text, float x, float y, void *font) {
     glRasterPos2f(x, y);
-    for (const char *p = text; *p; p++)
-    {
+    for (const char *p = text; *p; p++) {
         glutBitmapCharacter(font, *p);
     }
 }
 
-void drawStrokedText(const char *text, float x, float y, float scale)
-{
+void drawStrokedText(const char *text, float x, float y, float scale) {
     glPushMatrix();
     glTranslatef(x, y, 0);
     glScalef(scale, scale, scale);
-    for (const char *p = text; *p; p++)
-    {
+    for (const char *p = text; *p; p++) {
         glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
     }
     glPopMatrix();
