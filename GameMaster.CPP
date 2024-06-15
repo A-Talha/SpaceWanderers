@@ -25,6 +25,9 @@ void GameMaster::DestroyGameObject(GameObject* gameObject) {
     std::cout << "Destroying game object..." << std::endl;
     // Delete the object from memory
     // delete gameObject;
+    if(gameObject -> getType() == ObjectType::SPACESHIP){
+        EndGameOver();
+    }
 }
 bool GameMaster::initAudio() {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {

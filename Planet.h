@@ -32,8 +32,6 @@ public:
     void setCenter(const std::vector<float>& center);
     void setPlanetColor(const std::vector<float>& color);
 
-    void onCollisionEnter(GameObject *other);
-
 private:
     float planetRadius;
     float orbitRadius;

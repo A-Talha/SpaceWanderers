@@ -99,8 +99,3 @@ void Planet::setOrbitAngle(float angle) { orbitAngle = angle; }
 void Planet::setCenter(const std::vector<float>& center) { this->center = center; }
 void Planet::setPlanetColor(const std::vector<float>& color) { planetColor = color; }
 
-void Planet::onCollisionEnter(GameObject* other){
-    if(other->getType() == SPACESHIP){
-        // exit(0);
-    }
-}
