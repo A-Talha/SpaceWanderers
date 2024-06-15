@@ -26,7 +26,7 @@ void GameMaster::DestroyGameObject(GameObject* gameObject) {
     // Delete the object from memory
     // delete gameObject;
     if(gameObject -> getType() == ObjectType::SPACESHIP){
-        EndGameOver();
+        EndGameOver(WIN);
     }
 }
 bool GameMaster::initAudio() {
