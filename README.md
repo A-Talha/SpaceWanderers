@@ -30,7 +30,7 @@ Space Wanderers is a simple OpenGL-based space exploration game where you can na
     ```
 
 2. **Install dependencies**:
-   - Make sure you have OpenGL, GLEW, and GLUT/FreeGLUT installed on your system.
+   - Make sure you have OpenGL, GLEW, GLUT/FreeGLUT, SDL, and SDL_mixer installed on your system.
 
 3. **Build the game**:
     ```sh
