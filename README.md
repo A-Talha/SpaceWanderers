@@ -34,7 +34,7 @@ Space Wanderers is a simple OpenGL-based space exploration game where you can na
 
 3. **Build the game**:
     ```sh
-    g++ SpaceWanderers.cpp GameObject.cpp SpaceShip.cpp GameMaster.cpp Planet.cpp EnemyShip.cpp UI_Functions.cpp FireBullet.cpp -o SpaceWanderers -lopengl32 -lglew32 -lfreeglut -lglu32 -lSDL2 -        lSDL2_mixer -I src/include -L src/lib -m64
+    g++ SpaceWanderers.cpp GameObject.cpp SpaceShip.cpp GameMaster.cpp Planet.cpp EnemyShip.cpp UI_Functions.cpp FireBullet.cpp -o SpaceWanderers -lopengl32 -lglew32 -lfreeglut -lglu32 -lSDL2 - lSDL2_mixer -I src/include -L src/lib -m64
 
     ```
 
