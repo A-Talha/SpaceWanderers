@@ -23,6 +23,9 @@ public:
     virtual void update(float playerPosition[3]);
     GLuint texture;
     GLuint shader;
+
+    // Public member variables
+    float bounding_sphere_radius;
     
 
     // Public member functions
@@ -39,6 +42,7 @@ public:
     float getPositionX();
     float getPositionY();
     float getPositionZ();
+    float * getPosition(); 
     float getRotationAngle();
     float getRotationX();
     float getRotationY();
@@ -47,11 +51,22 @@ public:
     float getScaleY();
     float getScaleZ();
     void applyTransformations();
+
     //get type
     ObjectType getType();
     std::vector<float> getVertices();
     std::vector<float> getColors();
     std::vector<float> getVerticesTranformed();
+
+    void checkCollision(GameObject* otherObject);
+
+    virtual void onCollisionPersist(GameObject *other){}
+
+    virtual void onCollisionExit(GameObject *other){}
+
+    virtual void onCollisionEnter(GameObject* otherObject){}
+
+    static void Destroy(GameObject* object);
 
 private:
     // Private member variables
@@ -61,6 +76,7 @@ private:
     float scale[3];
     std::vector<float> vertices;
     std::vector<float> colors;
+    std::vector<GameObject*> collisions;
 };
 
 #endif

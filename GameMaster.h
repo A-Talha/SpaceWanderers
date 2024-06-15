@@ -37,8 +37,15 @@ enum GameResult {
 
 class GameMaster {
 public:
-    GameMaster();
-    ~GameMaster();
+    static GameMaster& GetInstance() {
+        static GameMaster instance; // Guaranteed to be destroyed, instantiated on first use.
+        return instance;
+    }
+
+    // Delete the copy constructor and assignment operator to prevent copying
+    GameMaster(const GameMaster&) = delete;
+    GameMaster& operator=(const GameMaster&) = delete;
+    
     void playSound(const std::string &filename);
     void draw();
     void updateGameState(GameState newState);
@@ -54,8 +61,11 @@ public:
     void StartTimeMode();
     void EndGameOver(GameResult result);
     void Update();
+    void DestroyGameObject(GameObject* gameObject);
 
 private:
+    GameMaster();
+    ~GameMaster();
     GameState state;
     GameResult result;
     SpaceShip spaceship;

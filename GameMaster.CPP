@@ -15,6 +15,20 @@ GameMaster::~GameMaster() {
     closeAudio();
 }
 
+void GameMaster::DestroyGameObject(GameObject* gameObject) {
+    for (auto it = gameObjects.begin(); it != gameObjects.end(); ++it) {
+        if (*it == gameObject) {
+            gameObjects.erase(it);
+            break;
+        }
+    }
+    std::cout << "Destroying game object..." << std::endl;
+    // Delete the object from memory
+    // delete gameObject;
+    if(gameObject -> getType() == ObjectType::SPACESHIP){
+        EndGameOver(WIN);
+    }
+}
 bool GameMaster::initAudio() {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
         std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
@@ -760,7 +774,7 @@ void GameMaster::DrawScene() {
 void GameMaster::addPlanets() {
     // Create the sun from Planet class
     Planet* sun = new Planet();
-    sun->setPlanetRadius(500.0f);
+    sun->setPlanetRadius(1000.0f);
     sun->setCenter(SUN_POSITION);
     sun->setPlanetColor(SUN_COLOR);
     sun->loadTexture("images/sun.jpg");
@@ -859,7 +873,11 @@ void GameMaster::addPlanets() {
 void GameMaster::Update() {
     // Update game logic
     if (state != MAIN_MENU && state != GAME_OVER) {
+        int obj_index = 0;
         for (GameObject* obj : gameObjects) {
+            for(int other_obj_index = obj_index + 1; other_obj_index < gameObjects.size(); ++other_obj_index){
+                gameObjects[other_obj_index] -> checkCollision(obj);
+            }
             if (obj->getType() == ObjectType::ENEMYSHIP) {
                 EnemyShip* enemy = dynamic_cast<EnemyShip*>(obj);
                 float playerPosition[3] = {spaceship.getPositionX(), spaceship.getPositionY(), spaceship.getPositionZ()};
@@ -867,6 +885,7 @@ void GameMaster::Update() {
             } else {
                 obj->update();
             }
+            ++obj_index;
         }
     }
     if (state == SURVIVAL_MODE) {

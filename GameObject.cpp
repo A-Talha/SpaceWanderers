@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "GameMaster.h"
 #include <GL/freeglut.h>
 #include <math.h>
 #include <iostream>
@@ -8,7 +9,7 @@ GameObject::GameObject(ObjectType type) : type(type), texture(0), shader(0) {
     setRotation(0.0f, 0.0f, 1.0f, 0.0f);
     setScale(1.0f, 1.0f, 1.0f);
 }
-
+ 
 void GameObject::setPosition(float x, float y, float z) {
     position[0] = x;
     position[1] = y;
@@ -94,6 +95,10 @@ float GameObject::getPositionZ() {
     return position[2];
 }
 
+float* GameObject::getPosition() {
+    return position;
+}
+
 float GameObject::getRotationAngle() {
     return rotation[0];
 }
@@ -166,6 +171,42 @@ std::vector<float> GameObject::getVerticesTranformed() {
 
 ObjectType GameObject::getType() {
     return type;
+}
+
+void GameObject::checkCollision(GameObject* other) {
+    const float * otherPos = other -> getPosition();
+    float distance = sqrt(pow(position[0] - otherPos[0], 2) + pow(position[1] - otherPos[1], 2) + pow(position[2] - otherPos[2], 2));
+
+    if(distance < other -> bounding_sphere_radius + bounding_sphere_radius){
+        // new collision
+        for(GameObject* collision : collisions){
+            if(collision == other){
+                onCollisionPersist(other);
+                other -> onCollisionPersist(this);
+                return;
+            }
+        }
+        onCollisionEnter(other);
+        other -> onCollisionEnter(this);
+
+        collisions.push_back(other);
+    }
+    else{
+        for(int i = 0; i < collisions.size(); i++){
+            if(collisions[i] == other){
+                onCollisionExit(other);
+                other -> onCollisionExit(this);
+                collisions.erase(collisions.begin() + i);
+                collisions.shrink_to_fit();
+                break;
+            }
+        }
+    }
+}
+
+void GameObject::Destroy(GameObject *object)
+{
+    GameMaster::GetInstance().DestroyGameObject(object);
 }
 
 //empty update function

@@ -39,6 +39,8 @@ public:
     void setMoveSpeed(float speed);
     void setRotationSpeed(float speed);
 
+    void onCollisionEnter(GameObject *other);
+    void receiveDamage(int damage);
 
 private:
     // Additional attributes specific to SpaceShip
