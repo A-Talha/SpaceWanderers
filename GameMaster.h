@@ -62,6 +62,13 @@ public:
     void EndGameOver(GameResult result);
     void Update();
     void DestroyGameObject(GameObject* gameObject);
+    void EnemyShipDestroyed(){
+        CurrentNumberOfEnemiesKilled++;
+        CurrentNumberOfEnemies--;
+        if(CurrentNumberOfEnemies == 0 && state == TIME_MODE){
+            EndGameOver(GameResult::WIN);
+        } 
+    }
 
 private:
     GameMaster();

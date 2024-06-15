@@ -1,4 +1,5 @@
 #include "SpaceShip.h"
+#include "GameMaster.h"
 #include <iostream>
 #include <cmath>
 #include <GL/freeglut.h>
@@ -28,7 +29,7 @@ SpaceShip::SpaceShip(ObjectType type)
 
 void SpaceShip::fireWeapon(std::vector<GameObject*>& gameObjectsRef) {
     // Check if enough time has passed since the last shot
-    if (glutGet(GLUT_ELAPSED_TIME) - timeSinceLastShot < timeBetweenShots) {
+    if (this->getType() == ENEMYSHIP && glutGet(GLUT_ELAPSED_TIME) - timeSinceLastShot < timeBetweenShots) {
         return;
     }
     timeSinceLastShot = glutGet(GLUT_ELAPSED_TIME);
@@ -269,13 +270,19 @@ void SpaceShip::setRotationSpeed(float speed) {
 
 void SpaceShip::onCollisionEnter(GameObject* other){
     if(other->getType() == PLANET){
-        GameObject::Destroy(this);
+        destroyShip();
     }
 }
 
 void SpaceShip::receiveDamage(int damage)
 {
     health -= damage;
-    if(health <= 0)
-        GameObject::Destroy(this);
+    if(health <= 0){
+        destroyShip();
+    }
+}
+
+void SpaceShip::destroyShip(){
+    GameMaster::GetInstance().EndGameOver(LOSE);
+    GameObject::Destroy(this);
 }

@@ -1,5 +1,6 @@
 //EnemyShip.cpp
 #include "EnemyShip.h"
+#include "GameMaster.h"
 #include <GL/freeglut.h>
 
 
@@ -115,4 +116,9 @@ int EnemyShip::getId() {
 
 void EnemyShip::setId(int id) {
     this->id = id;
+}
+
+void EnemyShip::destroyShip(){
+    GameMaster::GetInstance().EnemyShipDestroyed();
+    GameObject::Destroy(this);
 }

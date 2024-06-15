@@ -21,6 +21,8 @@ public:
     //getters and setters for the id of the enemy ship
     int getId() ;
     void setId(int id) ;
+    void destroyShip();
+
 private:
     int id;
 

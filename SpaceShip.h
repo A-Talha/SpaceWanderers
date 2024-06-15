@@ -41,6 +41,7 @@ public:
 
     void onCollisionEnter(GameObject *other);
     void receiveDamage(int damage);
+    virtual void destroyShip();
 
 private:
     // Additional attributes specific to SpaceShip

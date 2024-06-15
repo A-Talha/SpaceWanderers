@@ -47,6 +47,5 @@ void FireBullet::onCollisionEnter(GameObject* other){
         ((SpaceShip *)other) -> receiveDamage(20);
     else if(other -> getType() == ObjectType::SPACESHIP)
         ((SpaceShip *)other) -> receiveDamage(10);
-    else if(other -> getType() == ObjectType::PLANET)
-        GameObject::Destroy(this);
+    GameObject::Destroy(this);
 }
