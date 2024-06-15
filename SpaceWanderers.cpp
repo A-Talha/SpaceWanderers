@@ -1,14 +1,19 @@
+#define GLUT_DISABLE_ATEXIT_HACK
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <iostream>
 #include "GameMaster.h"
-
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_mixer.h"
+#include <windows.h>
 
 // Window dimensions
 const int WINDOW_WIDTH = 1300;
 const int WINDOW_HEIGHT = 800;
 const float MAP_SIZE = 10000.0f;
 
+int g_hWnd;
+HGLRC g_hRC;
 //GameMaster object
 GameMaster gameMaster;
 
@@ -54,9 +59,10 @@ void mouse(int button, int state, int x, int y) {
 }
 
 // Main function
-int main(int argc, char** argv) {
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
     // Initialize GLUT
-    glutInit(&argc, argv);
+    glutInit(&__argc, __argv); // Pass command line arguments to GLUT initialization
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 
     // Create the window
@@ -73,6 +79,16 @@ int main(int argc, char** argv) {
     // Initialize OpenGL settings
     initOpenGL();
 
+    // Set up OpenGL context
+    g_hRC = wglGetCurrentContext();
+
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+
     // Set up callback functions
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
@@ -82,6 +98,9 @@ int main(int argc, char** argv) {
 
     // Start the main loop
     glutMainLoop();
+
+    // Quit SDL
+    SDL_Quit();
 
     return 0;
 }

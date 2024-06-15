@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "C:/msys64/ucrt64/include",
                 "C:/msys64/ucrt64/include/GL",
-                "C:/msys64/ucrt64/include/SDL2"
+                "C:\\msys64\\ucrt64\\include\\SDL2"
             ],
             "defines": [
                 "_DEBUG",

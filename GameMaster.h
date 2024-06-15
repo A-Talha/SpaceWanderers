@@ -1,3 +1,4 @@
+#define GLUT_DISABLE_ATEXIT_HACK
 #ifndef GAMEMASTER_H
 #define GAMEMASTER_H
 
@@ -12,6 +13,10 @@
 #include "EnemyShip.h"
 #include "UI_Functions.h"
 #include <iostream>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <thread>
+#include <windows.h>
 
 using namespace std;
 
@@ -68,6 +73,10 @@ private:
     void clearGameObjects();
     void createEnemyShip(int id,std::vector<float> Vertices, std::vector<float> Colors);
     void checkSpaceShipwithinBoundaries();
+    void IncreaseScore(int amount);
+    void increaseHealth(int amount);
+    void decreaseHealth(int amount);
+    void playSound(const std::string &filename);
 };
 
 #endif

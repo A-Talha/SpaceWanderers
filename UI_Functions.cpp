@@ -1,6 +1,7 @@
 #include "UI_Functions.h"
 #include <GL/glut.h>
 #include <sstream>
+#include <iostream>
 
 
 void drawText(const char *text, float x, float y, void *font)
@@ -24,8 +25,7 @@ void drawStrokedText(const char *text, float x, float y, float scale)
     glPopMatrix();
 }
 
-void drawRectangle(float x, float y, float width, float height)
-{
+void drawRectangle(float x, float y, float width, float height) {
     glBegin(GL_QUADS);
     glVertex2f(x, y);
     glVertex2f(x + width, y);
@@ -34,8 +34,11 @@ void drawRectangle(float x, float y, float width, float height)
     glEnd();
 }
 
-void drawHealthBar(float x, float y, float width, float height, float maxHealth, float currentHealth)
-{
+void drawHealthBar(float x, float y, float width, float height, float maxHealth, float currentHealth) {
+    // Ensure health value is within the valid range
+    if (currentHealth < 0) currentHealth = 0;
+    if (currentHealth > maxHealth) currentHealth = maxHealth;
+
     // Draw background of health bar (full bar)
     glColor3f(0.2f, 0.2f, 0.2f); // Dark gray
     drawRectangle(x, y, width, height);
@@ -47,6 +50,7 @@ void drawHealthBar(float x, float y, float width, float height, float maxHealth,
     glColor3f(1.0f, 0.0f, 0.0f); // Red color
     drawRectangle(x, y, healthBarWidth, height);
 }
+
 
 void decreaseHealth(int& health, int amount)
 {

@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+
 GameMaster::GameMaster() {
     state = MAIN_MENU; // Initial game state
 }
@@ -128,6 +129,23 @@ void GameMaster::keyChar(unsigned char key) {
         // invoke space ship fire weapon and pass game object as a reference
         spaceship.fireWeapon(gameObjects);
         break;
+    case 'w':
+        // increase the health of the player ship by 10
+        increaseHealth(10);
+        glutPostRedisplay();
+        break;
+    case 's':
+        // decrease the health of the player ship by 10
+        decreaseHealth(10);
+        glutPostRedisplay();
+        break;
+    case 'c':
+        // play a sound effect
+        std::thread(&GameMaster::playSound, this, "E:\\college\\level-3\\2nd term\\Graphics\\project\\src\\Explosion.wav").detach();
+        break;
+    case 'v':
+        // play a different sound effect
+        std::thread(&GameMaster::playSound, this, "E:\\college\\level-3\\2nd term\\Graphics\\project\\src\\Laser.wav").detach();
     // Add more key controls here for your game
     }
 }
@@ -283,7 +301,7 @@ void GameMaster::StartSurvivalMode() {
     glLightfv(GL_LIGHT0, GL_SPECULAR, SUN_COLOR1);
 
     // Set global ambient light
-    GLfloat globalAmbient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+    GLfloat globalAmbient[] = {0.5f, 0.5f, 0.5f, 1.0f};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
     // Enable color tracking
@@ -370,17 +388,7 @@ void GameMaster::StartSurvivalMode() {
 
 void GameMaster::StartTimeMode() {
     std::cout << "Starting Time Attack Mode..." << std::endl;
-    // Set the viewport to cover the new window size
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-    // Set the projection matrix
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0, (double)WINDOW_WIDTH / (double)WINDOW_HEIGHT, 1.0, 20000.0);
-
-    // Switch back to the modelview matrix
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    
 
     const float SUN_POSITION1[] = {0.0f, 2500.0f, 0.0f, 1.0f}; // x, y, z, w
     const float SUN_COLOR1[] = {1.0f, 1.0f, 0.8f, 1.0f}; // White-yellow light
@@ -536,6 +544,17 @@ void GameMaster::DrawMainMenu() {
 
 void GameMaster::DrawSurvivalMode() {
     // Clear the color and depth buffers for the main viewport
+    // Set the viewport to cover the new window size
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // Set the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (double)WINDOW_WIDTH / (double)WINDOW_HEIGHT, 1.0, 20000.0);
+
+    // Switch back to the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // First viewport (main view)
@@ -573,6 +592,48 @@ void GameMaster::DrawSurvivalMode() {
 
     // Draw the scene again
     DrawScene();
+
+    // Create a viewport for the top middle corner of the screen
+    int topViewportWidth = WINDOW_WIDTH * 3 / 4;
+    int topViewportHeight = WINDOW_HEIGHT * 1 / 10;
+    int topViewportX = WINDOW_WIDTH * 1 / 8;
+    int topViewportY = WINDOW_HEIGHT - topViewportHeight;
+
+    // Enable scissor test to limit the clearing to the third viewport
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(topViewportX, topViewportY, topViewportWidth, topViewportHeight);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_SCISSOR_TEST);
+
+    // Set up orthographic projection for the top viewport
+    glViewport(topViewportX, topViewportY, topViewportWidth, topViewportHeight);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, topViewportWidth, 0.0, topViewportHeight);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    // Create and draw the health bar
+    //disable depth test
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+    glDisable(GL_COLOR_MATERIAL);
+    // draw the score on the top left of the viewport
+    glColor3f(1.0f, 1.0f, 1.0f);
+    std::string scorestring = "Score: " + std::to_string(score);
+    drawText(scorestring.c_str(), 0, 30.0f, GLUT_BITMAP_HELVETICA_18);
+    // draw the time elapsed on the top right of the viewport
+    float timeElapsed = (currentTime - startTime) / 1000;
+    std::string timeString = "Time Elapsed: " + std::to_string(timeElapsed);
+    drawText(timeString.c_str(), 0 , 50.0f, GLUT_BITMAP_HELVETICA_18);
+    drawHealthBar(0, 0, topViewportWidth, 20.0, 100.0, spaceship.getHealth());
+    //enable depth test
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+
 
     // Swap the front and back buffers to display the scene
     glutSwapBuffers();
@@ -580,6 +641,17 @@ void GameMaster::DrawSurvivalMode() {
 
 void GameMaster::DrawTimeMode() {
     // Clear the color and depth buffers for the main viewport
+    // Set the viewport to cover the new window size
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // Set the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (double)WINDOW_WIDTH / (double)WINDOW_HEIGHT, 1.0, 20000.0);
+
+    // Switch back to the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // First viewport (main view)
@@ -618,9 +690,52 @@ void GameMaster::DrawTimeMode() {
     // Draw the scene again
     DrawScene();
 
+    // Create a viewport for the top middle corner of the screen
+    int topViewportWidth = WINDOW_WIDTH * 3 / 4;
+    int topViewportHeight = WINDOW_HEIGHT * 1 / 10;
+    int topViewportX = WINDOW_WIDTH * 1 / 8;
+    int topViewportY = WINDOW_HEIGHT - topViewportHeight;
+
+    // Enable scissor test to limit the clearing to the third viewport
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(topViewportX, topViewportY, topViewportWidth, topViewportHeight);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_SCISSOR_TEST);
+
+    // Set up orthographic projection for the top viewport
+    glViewport(topViewportX, topViewportY, topViewportWidth, topViewportHeight);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, topViewportWidth, 0.0, topViewportHeight);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    // Create and draw the health bar
+    //disable depth test
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+    glDisable(GL_COLOR_MATERIAL);
+    // draw the score on the top left of the viewport
+    glColor3f(1.0f, 1.0f, 1.0f);
+    std::string scorestring = "Score: " + std::to_string(score);
+    drawText(scorestring.c_str(), 0, 30.0f, GLUT_BITMAP_HELVETICA_18);
+    // draw the time remaining on the top right of the viewport
+    float timeRemaining = (TimeLimit - (currentTime - startTime)) / 1000;
+    std::string timeString = "Time Remaining: " + std::to_string(timeRemaining);
+    drawText(timeString.c_str(), 0 , 50.0f, GLUT_BITMAP_HELVETICA_18);
+    drawHealthBar(0, 0, topViewportWidth, 20.0, 100.0, spaceship.getHealth());
+    //enable depth test
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+
     // Swap the front and back buffers to display the scene
     glutSwapBuffers();
 }
+
+
 
 
 void GameMaster::DrawGameOver() {
@@ -648,7 +763,7 @@ void GameMaster::Update() {
     }
     if (state == SURVIVAL_MODE) {
         // Check if it's time to spawn a new enemy
-        float currentTime = glutGet(GLUT_ELAPSED_TIME);
+        currentTime = glutGet(GLUT_ELAPSED_TIME);
         if (currentTime - lastTimeEnemySpawned > intervalTimeToSpawnEnemy) {
             if (CurrentNumberOfEnemies < maxNumberOfEnemies) {
                 createEnemyShip(currentID, spaceship.getVertices(), enemyColors);
@@ -660,7 +775,7 @@ void GameMaster::Update() {
     }
     if (state == TIME_MODE) {
         // Check if the time limit has been reached
-        float currentTime = glutGet(GLUT_ELAPSED_TIME);
+        currentTime = glutGet(GLUT_ELAPSED_TIME);
         if (currentTime - startTime > TimeLimit) {
             EndGameOver();
         }
@@ -728,10 +843,6 @@ void GameMaster::createEnemyShip(int id, std::vector<float> Vertices, std::vecto
 }
 
 void GameMaster::checkSpaceShipwithinBoundaries() {
-    // Check if the spaceship is within the boundaries of the game world
-    // If the spaceship goes outside the boundaries, reset its position
-    // to the center of the game world
-    // write the code here
     if (spaceship.getPositionX() > 10000) {
         spaceship.setPosition(10000, spaceship.getPositionY(), spaceship.getPositionZ());
     }
@@ -744,4 +855,53 @@ void GameMaster::checkSpaceShipwithinBoundaries() {
     else if (spaceship.getPositionZ() < -10000) {
         spaceship.setPosition(spaceship.getPositionX(), spaceship.getPositionY(), -10000);
     }
+}
+
+void GameMaster::IncreaseScore(int amount) {
+    score += amount;
+}
+
+void GameMaster::increaseHealth(int amount) {
+    int currentHealth = spaceship.getHealth();
+    if (currentHealth + amount <= 100) {
+        spaceship.setHealth(currentHealth + amount);
+    }
+}
+
+void GameMaster::decreaseHealth(int amount) {
+    int currentHealth = spaceship.getHealth();
+    if (currentHealth - amount <= 0) {
+        spaceship.setHealth(0);
+        EndGameOver();
+    } else {
+        spaceship.setHealth(currentHealth - amount);
+    }
+}
+
+void GameMaster::playSound(const std::string &filename)
+{
+    // Initialize SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
+        return;
+    }
+
+    // Load sound
+    Mix_Chunk *Sound = Mix_LoadWAV(filename.c_str());
+    if (Sound == nullptr)
+    {
+        std::cerr << "Failed to load crash sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
+        return;
+    }
+
+    // Play sound
+    Mix_PlayChannel(-1, Sound, 0);
+
+    // Wait for sound to finish
+    SDL_Delay(1000);
+
+    // Clean up
+    Mix_FreeChunk(Sound);
+    Mix_CloseAudio();
 }
