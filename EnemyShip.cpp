@@ -1,11 +1,16 @@
 //EnemyShip.cpp
 #include "EnemyShip.h"
-
+#include <GL/freeglut.h>
 
 
 EnemyShip::EnemyShip()
     : SpaceShip(ENEMYSHIP) {
     // Additional initialization if needed
+    // set the initial time since last to be with the creation of the spaceship
+    timeSinceLastShot = glutGet(GLUT_ELAPSED_TIME);
+
+    // set the time between shots to be 1.5 seconds
+    timeBetweenShots = 2000;
 }
 
 void EnemyShip::move(float playerPosition[3], std::vector<Planet*> planets, std::vector<EnemyShip*> enemyShips) {
@@ -67,7 +72,7 @@ void EnemyShip::move(float playerPosition[3], std::vector<Planet*> planets, std:
         direction[0] /= magnitude;
         direction[2] /= magnitude;
         float adjustment = (magnitude - 1500.0f) / magnitude; // Adjust proportionally to the speed
-        moveInDirection(direction, adjustment * 3.5f); // Adjust speed as needed
+        moveInDirection(direction, adjustment * 7.0f); // Adjust speed as needed
     }
 }
 
@@ -93,10 +98,14 @@ void EnemyShip::setDirection(float playerPosition[3]) {
     //set the rotation of the enemy ship to face the player
     float angle = atan2(direction[0], direction[2]) * 180 / 3.14159;
     setRotation(angle+180, 0.0f, 1.0f, 0.0f);
+    updateFirstPersonView();
+    updateThirdPersonView();
+
 }
 
-void EnemyShip::update(float playerPosition[3], std::vector<Planet*> planets ,std::vector<EnemyShip*> enemyShips){
+void EnemyShip::update(float playerPosition[3], std::vector<Planet*> planets ,std::vector<EnemyShip*> enemyShips,std::vector<GameObject*>& gameObjectsRef) {
     setDirection(playerPosition);
+    fireWeapon(gameObjectsRef);
     move(playerPosition, planets,enemyShips);
 }
 

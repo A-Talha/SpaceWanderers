@@ -16,7 +16,7 @@ public:
     void move(float playerPosition[3], std::vector<Planet*> planets, std::vector<EnemyShip*> enemyShips);
     void setDirection(float playerPosition[3]);
     //update function for the enemy ship takes the player's position as a parameter array of floats and takes a vector of planets as a parameter
-    void update(float playerPosition[3], std::vector<Planet*> planets, std::vector<EnemyShip*> enemyShips);
+    void update(float playerPosition[3], std::vector<Planet*> planets, std::vector<EnemyShip*> enemyShips,std::vector<GameObject*>& gameObjectsRef);
 
     //getters and setters for the id of the enemy ship
     int getId() ;

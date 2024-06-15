@@ -8,6 +8,8 @@ public:
     // Constructor
     SpaceShip();
     SpaceShip(ObjectType type);
+    float timeSinceLastShot;
+    float timeBetweenShots;
 
     // Additional methods specific to SpaceShip
     void draw() override;
