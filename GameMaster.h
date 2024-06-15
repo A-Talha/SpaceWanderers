@@ -17,6 +17,8 @@
 #include <SDL2/SDL_mixer.h>
 #include <thread>
 #include <windows.h>
+#include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
@@ -31,11 +33,16 @@ class GameMaster {
 public:
     GameMaster();
     ~GameMaster();
+    void playSound(const std::string &filename);
     void draw();
     void updateGameState(GameState newState);
     void processMouse(int button, int state, int x, int y);
+    void keyPressed(int key, bool pressed);
+    void handleKeys();
     void SpecialKey(int key, int x, int y);
+    void SpecialKeyUp(int key, int x, int y);
     void keyChar(unsigned char key);
+    void keyUp(unsigned char key);
     void GoToMainMenu();
     void StartSurvivalMode();
     void StartTimeMode();
@@ -47,6 +54,7 @@ private:
     SpaceShip spaceship;
     std::vector<float> SUN_POSITION = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
     std::vector<float> SUN_COLOR = {1.0f, 0.5f, 0.0f, 1.0f}; // White-yellow light
+    std::unordered_set<int> keysPressed;
     const int WINDOW_WIDTH = 1300;
     const int WINDOW_HEIGHT = 800;
     int score;
@@ -70,13 +78,16 @@ private:
     void DrawTimeMode();
     void DrawGameOver();
     void DrawScene();
+    void addPlanets();
     void clearGameObjects();
     void createEnemyShip(int id,std::vector<float> Vertices, std::vector<float> Colors);
     void checkSpaceShipwithinBoundaries();
     void IncreaseScore(int amount);
     void increaseHealth(int amount);
     void decreaseHealth(int amount);
-    void playSound(const std::string &filename);
+    bool initAudio();
+    void closeAudio();
+    std::unordered_map<std::string, Mix_Chunk*> soundCache;
 };
 
 #endif

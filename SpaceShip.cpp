@@ -1,6 +1,7 @@
 #include "SpaceShip.h"
 #include <iostream>
 #include <cmath>
+#include <GL/freeglut.h>
 #include "FireBullet.h"
 
 SpaceShip::SpaceShip()
@@ -15,21 +16,10 @@ SpaceShip::SpaceShip(ObjectType type)
 
 void SpaceShip::fireWeapon(std::vector<GameObject*>& gameObjectsRef) {
     std::cout << "Firing weapon with power: " << weaponPower << std::endl;
-    FireBullet* fireBullet = new FireBullet(weaponPower, getFirstPersonCameraPosition(), getFirstPersonLookAt());
+    FireBullet* fireBullet = new FireBullet(weaponPower, getFirstPersonCameraPosition(), getFirstPersonLookAt(), gameObjectsRef);
+
     gameObjectsRef.push_back(fireBullet);
 }
-
-#include "SpaceShip.h"
-#include <GL/freeglut.h>
-#include <iostream>
-
-#include "SpaceShip.h"
-#include <GL/freeglut.h>
-#include <iostream>
-
-#include "SpaceShip.h"
-#include <GL/freeglut.h>
-#include <iostream>
 
 void SpaceShip::draw() {
     // Call the base class GameObject draw function

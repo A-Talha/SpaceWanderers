@@ -6,7 +6,7 @@
 class FireBullet : public GameObject {
 public:
     // Constructor
-    FireBullet(int firePower, std::vector<float> position, std::vector<float> lookAt);
+    FireBullet(int firePower, std::vector<float> position, std::vector<float> lookAt, std::vector<GameObject*>& objectsRef);
 
     // Additional methods specific to FireBullet
     // void adjustVertices();
@@ -16,9 +16,12 @@ public:
 
 private:
     // Additional attributes specific to FireBullet
+    std::vector<GameObject*>& gameObjectsRef;
     float moveSpeed;
     float direction[3];
+    float initialPosition[3];
     int firePower;
+    int cnt = 0;
 };
 
 #endif

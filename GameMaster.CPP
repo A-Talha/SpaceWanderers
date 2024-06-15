@@ -6,10 +6,49 @@
 
 GameMaster::GameMaster() {
     state = MAIN_MENU; // Initial game state
+    if (!initAudio())
+        std::cerr << "Failed to initialize audio system!" << std::endl;
 }
 
 GameMaster::~GameMaster() {
     clearGameObjects();
+    closeAudio();
+}
+
+bool GameMaster::initAudio() {
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
+        return false;
+    }
+    return true;
+}
+
+void GameMaster::closeAudio() {
+    for (auto &pair : soundCache) {
+        Mix_FreeChunk(pair.second);
+    }
+    soundCache.clear();
+    Mix_CloseAudio();
+}
+
+void GameMaster::playSound(const std::string &filename) {
+    Mix_Chunk *sound = nullptr;
+
+    auto it = soundCache.find(filename);
+    if (it != soundCache.end()) {
+        sound = it->second;
+    } else {
+        sound = Mix_LoadWAV(filename.c_str());
+        if (sound == nullptr) {
+            std::cerr << "Failed to load sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
+            return;
+        }
+        soundCache[filename] = sound;
+    }
+
+    if (Mix_PlayChannel(-1, sound, 0) == -1) {
+        std::cerr << "Unable to play sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
+    }
 }
 
 void GameMaster::clearGameObjects() {
@@ -51,35 +90,6 @@ void GameMaster::updateGameState(GameState newState) {
     state = newState;
 }
 
-void GameMaster::SpecialKey(int key, int x, int y) {
-    switch (key) {
-    case GLUT_KEY_UP:
-        spaceship.moveForward();
-        checkSpaceShipwithinBoundaries();
-        spaceship.updateFirstPersonView();
-        spaceship.updateThirdPersonView();
-        break;
-    case GLUT_KEY_DOWN:
-        spaceship.moveBackward();
-        checkSpaceShipwithinBoundaries();
-        spaceship.updateFirstPersonView();
-        spaceship.updateThirdPersonView();
-        break;
-    case GLUT_KEY_LEFT:
-        spaceship.moveLeft();
-        checkSpaceShipwithinBoundaries();
-        spaceship.updateFirstPersonView();
-        spaceship.updateThirdPersonView();
-        break;
-    case GLUT_KEY_RIGHT:
-        spaceship.moveRight();
-        checkSpaceShipwithinBoundaries();
-        spaceship.updateFirstPersonView();
-        spaceship.updateThirdPersonView();
-        break;
-    }
-}
-
 void GameMaster::processMouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && GameMaster::state == MAIN_MENU) {
         // Convert window coordinates to OpenGL coordinates
@@ -104,50 +114,87 @@ void GameMaster::processMouse(int button, int state, int x, int y) {
     }
 }
 
-void GameMaster::keyChar(unsigned char key) {
-    switch (key) {
-    case 27: // ESC key
-        if(state == MAIN_MENU){
-            clearGameObjects();
-            exit(0);
-        } else {
-            std::cout << "Going to main menu..." << std::endl;
-            GoToMainMenu();
-        }
-        break;
-    case 'z':
-        spaceship.RotateLeft();
-        spaceship.updateFirstPersonView();
-        spaceship.updateThirdPersonView();
-        break;
-    case 'x':
-        spaceship.RotateRight();
-        spaceship.updateFirstPersonView();
-        spaceship.updateThirdPersonView();
-        break;
-    case ' ':
-        // invoke space ship fire weapon and pass game object as a reference
-        spaceship.fireWeapon(gameObjects);
-        break;
-    case 'w':
-        // increase the health of the player ship by 10
-        increaseHealth(10);
-        glutPostRedisplay();
-        break;
-    case 's':
-        // decrease the health of the player ship by 10
-        decreaseHealth(10);
-        glutPostRedisplay();
-        break;
-    case 'c':
-        // play a sound effect
-        std::thread(&GameMaster::playSound, this, "E:\\college\\level-3\\2nd term\\Graphics\\project\\src\\Explosion.wav").detach();
-        break;
-    case 'v':
-        // play a different sound effect
-        std::thread(&GameMaster::playSound, this, "E:\\college\\level-3\\2nd term\\Graphics\\project\\src\\Laser.wav").detach();
-    // Add more key controls here for your game
+ void GameMaster::keyPressed(int key, bool pressed) {
+    if (pressed) {
+        keysPressed.insert(key);
+    } else {
+        keysPressed.erase(key);
     }
+
+    handleKeys();
+}
+
+void GameMaster::handleKeys() {
+    for (int key : keysPressed) {
+        switch (key) {
+            case GLUT_KEY_UP:
+                spaceship.moveForward();
+                break;
+            case GLUT_KEY_DOWN:
+                spaceship.moveBackward();
+                break;
+            case GLUT_KEY_LEFT:
+                spaceship.moveLeft();
+                break;
+            case GLUT_KEY_RIGHT:
+                spaceship.moveRight();
+                break;
+            case 27: // ESC key
+                if(state == MAIN_MENU){
+                    clearGameObjects();
+                    exit(0);
+                } else {
+                    std::cout << "Going to main menu..." << std::endl;
+                    GoToMainMenu();
+                }
+                break;
+            case 'z':
+                spaceship.RotateLeft();
+                break;
+            case 'x':
+                spaceship.RotateRight();
+                break;
+            case ' ':
+                std::thread(&GameMaster::playSound, this, "Laser.wav").detach();
+                spaceship.fireWeapon(gameObjects);
+                break;
+            case 'w':
+                increaseHealth(10);
+                break;
+            case 's':
+                decreaseHealth(10);
+                break;
+            case 'c':
+                std::thread(&GameMaster::playSound, this, "Explosion.wav").detach();
+                break;
+            case 'v':
+                std::thread(&GameMaster::playSound, this, "Laser.wav").detach();
+                break;
+            // Add more cases as needed
+        }
+    }
+
+    // Update views after handling all keys
+    spaceship.updateFirstPersonView();
+    spaceship.updateThirdPersonView();
+    glutPostRedisplay(); // Ensure screen refresh after key handling
+}
+
+void GameMaster::SpecialKey(int key, int x, int y) {
+    std::cout << "Key pressed: " << key << std::endl;
+    keyPressed(key, true); // Assuming GLUT_DOWN event
+}
+
+void GameMaster::keyChar(unsigned char key) {
+    keyPressed(key, true); // Assuming key press event
+}
+
+void GameMaster::keyUp(unsigned char key) {
+    keyPressed(key, false); // Assuming key release event
+}
+
+void GameMaster::SpecialKeyUp(int key, int x, int y) {
+    keyPressed(key, false); // Assuming GLUT_UP event
 }
 
 void GameMaster::GoToMainMenu() {
@@ -188,102 +235,7 @@ void GameMaster::StartSurvivalMode() {
     // Clear any existing game objects
     clearGameObjects();
 
-    // Create the sun from Planet class
-    Planet* sun = new Planet();
-    sun->setPlanetRadius(500.0f);
-    sun->setCenter(SUN_POSITION);
-    sun->setPlanetColor(SUN_COLOR);
-    sun->loadTexture("images/sun.jpg");
-    gameObjects.push_back(sun);
-    planets.push_back(sun);
-
-    // Create mercury planet from Planet class
-    Planet* mercury = new Planet();
-    mercury->setPlanetRadius(100.0f);
-    mercury->setCenter({1150.0f, 1000.0f, 0.0f, 1.0f});
-    mercury->setOrbitRadius(1150.0f);
-    mercury->setOrbitSpeed(0.0004f);
-    mercury->setPlanetColor({0.45f, 0.44f, 0.42f, 1.0f});
-    mercury->loadTexture("images/mercury.jpg");
-    gameObjects.push_back(mercury);
-    planets.push_back(mercury);
-
-    // Create venus planet from Planet class
-    Planet* venus = new Planet();
-    venus->setPlanetRadius(150.0f);
-    venus->setCenter({2500.0f, 1000.0f, 0.0f, 1.0f});
-    venus->setOrbitRadius(2600.0f);
-    venus->setOrbitSpeed(0.0005f);
-    venus->setPlanetColor({1.0f, 0.5f, 0.0f, 1.0f});
-    venus->loadTexture("images/venus.jpg");
-    gameObjects.push_back(venus);
-    planets.push_back(venus);
-
-    // Create earth planet from Planet class
-    Planet* earth = new Planet();
-    earth->setPlanetRadius(200.0f);
-    earth->setCenter({3600.0f, 1000.0f, 0.0f, 1.0f});
-    earth->setOrbitRadius(3600.0f);
-    earth->setOrbitSpeed(0.00035f);
-    earth->setPlanetColor({0.0f, 1.0f, 1.0f, 1.0f});
-    earth->loadTexture("images/earth.jpg");
-    gameObjects.push_back(earth);
-    planets.push_back(earth);
-
-    // Create mars planet from Planet class
-    Planet* mars = new Planet();
-    mars->setPlanetRadius(180.0f);
-    mars->setCenter({4800.0f, 1000.0f, 0.0f, 1.0f});
-    mars->setOrbitRadius(4800.0f);
-    mars->setOrbitSpeed(0.0003f);
-    mars->setPlanetColor({0.9f, 0.15f, 0.05f, 1.0f});
-    mars->loadTexture("images/mars.jpg");
-    gameObjects.push_back(mars);
-    planets.push_back(mars);
-
-    // Create jupiter planet from Planet class
-    Planet* jupiter = new Planet();
-    jupiter->setPlanetRadius(400.0f);
-    jupiter->setCenter({6100.0f, 1000.0f, 0.0f, 1.0f});
-    jupiter->setOrbitRadius(6100.0f);
-    jupiter->setOrbitSpeed(0.00025f);
-    jupiter->setPlanetColor({0.8f, 0.5f, 0.3f, 1.0f});
-    jupiter->loadTexture("images/jupiter.jpg");
-    gameObjects.push_back(jupiter);
-    planets.push_back(jupiter);
-    
-    // Create saturn planet from Planet class
-    Planet* saturn = new Planet();
-    saturn->setPlanetRadius(300.0f);
-    saturn->setCenter({6900.0f, 1000.0f, 0.0f, 1.0f});
-    saturn->setOrbitRadius(6900.0f);
-    saturn->setOrbitSpeed(0.0004f);
-    saturn->setPlanetColor({0.9f, 0.8f, 0.5f, 1.0f});
-    saturn->loadTexture("images/saturn.jpg");
-    gameObjects.push_back(saturn);
-    planets.push_back(saturn);
-
-    // Create uranus planet from Planet class
-    Planet* uranus = new Planet();
-    uranus->setPlanetRadius(250.0f);
-    uranus->setCenter({7800.0f, 1000.0f, 0.0f, 1.0f});
-    uranus->setOrbitRadius(7800.0f);
-    uranus->setOrbitSpeed(0.0002f);
-    uranus->setPlanetColor({0.5f, 0.8f, 0.9f, 1.0f});
-    uranus->loadTexture("images/uranus.jpg");
-    gameObjects.push_back(uranus);
-    planets.push_back(uranus);
-
-    // Create neptune planet from Planet class
-    Planet* neptune = new Planet();
-    neptune->setPlanetRadius(200.0f);
-    neptune->setCenter({8600.0f, 1000.0f, 0.0f, 1.0f});
-    neptune->setOrbitRadius(8600.0f);
-    neptune->setOrbitSpeed(0.0003f);
-    neptune->setPlanetColor({0.0f, 0.3f, 0.8f, 1.0f});
-    neptune->loadTexture("images/neptune.jpg");
-    gameObjects.push_back(neptune);
-    planets.push_back(neptune);
+    addPlanets();
 
     // Set the background color to black
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -396,13 +348,7 @@ void GameMaster::StartTimeMode() {
     // Clear any existing game objects
     clearGameObjects();
 
-    // Create the sun from Planet class
-    Planet* sun = new Planet();
-    sun->setPlanetRadius(500.0f);
-    sun->setCenter(SUN_POSITION);
-    sun->setPlanetColor(SUN_COLOR);
-    gameObjects.push_back(sun);
-    planets.push_back(sun);
+    addPlanets();
 
     // Set the background color to black
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -748,6 +694,105 @@ void GameMaster::DrawScene() {
     }
 }
 
+void GameMaster::addPlanets() {
+    // Create the sun from Planet class
+    Planet* sun = new Planet();
+    sun->setPlanetRadius(500.0f);
+    sun->setCenter(SUN_POSITION);
+    sun->setPlanetColor(SUN_COLOR);
+    sun->loadTexture("images/sun.jpg");
+    gameObjects.push_back(sun);
+    planets.push_back(sun);
+
+    // Create mercury planet from Planet class
+    Planet* mercury = new Planet();
+    mercury->setPlanetRadius(100.0f);
+    mercury->setCenter({1150.0f, 1000.0f, 0.0f, 1.0f});
+    mercury->setOrbitRadius(1150.0f);
+    mercury->setOrbitSpeed(0.0004f);
+    mercury->setPlanetColor({0.45f, 0.44f, 0.42f, 1.0f});
+    mercury->loadTexture("images/mercury.jpg");
+    gameObjects.push_back(mercury);
+    planets.push_back(mercury);
+
+    // Create venus planet from Planet class
+    Planet* venus = new Planet();
+    venus->setPlanetRadius(150.0f);
+    venus->setCenter({2500.0f, 1000.0f, 0.0f, 1.0f});
+    venus->setOrbitRadius(2600.0f);
+    venus->setOrbitSpeed(0.0005f);
+    venus->setPlanetColor({1.0f, 0.5f, 0.0f, 1.0f});
+    venus->loadTexture("images/venus.jpg");
+    gameObjects.push_back(venus);
+    planets.push_back(venus);
+
+    // Create earth planet from Planet class
+    Planet* earth = new Planet();
+    earth->setPlanetRadius(200.0f);
+    earth->setCenter({3600.0f, 1000.0f, 0.0f, 1.0f});
+    earth->setOrbitRadius(3600.0f);
+    earth->setOrbitSpeed(0.00035f);
+    earth->setPlanetColor({0.0f, 1.0f, 1.0f, 1.0f});
+    earth->loadTexture("images/earth.jpg");
+    gameObjects.push_back(earth);
+    planets.push_back(earth);
+
+    // Create mars planet from Planet class
+    Planet* mars = new Planet();
+    mars->setPlanetRadius(180.0f);
+    mars->setCenter({4800.0f, 1000.0f, 0.0f, 1.0f});
+    mars->setOrbitRadius(4800.0f);
+    mars->setOrbitSpeed(0.0003f);
+    mars->setPlanetColor({0.9f, 0.15f, 0.05f, 1.0f});
+    mars->loadTexture("images/mars.jpg");
+    gameObjects.push_back(mars);
+    planets.push_back(mars);
+
+    // Create jupiter planet from Planet class
+    Planet* jupiter = new Planet();
+    jupiter->setPlanetRadius(400.0f);
+    jupiter->setCenter({6100.0f, 1000.0f, 0.0f, 1.0f});
+    jupiter->setOrbitRadius(6100.0f);
+    jupiter->setOrbitSpeed(0.00025f);
+    jupiter->setPlanetColor({0.8f, 0.5f, 0.3f, 1.0f});
+    jupiter->loadTexture("images/jupiter.jpg");
+    gameObjects.push_back(jupiter);
+    planets.push_back(jupiter);
+    
+    // Create saturn planet from Planet class
+    Planet* saturn = new Planet();
+    saturn->setPlanetRadius(300.0f);
+    saturn->setCenter({6900.0f, 1000.0f, 0.0f, 1.0f});
+    saturn->setOrbitRadius(6900.0f);
+    saturn->setOrbitSpeed(0.0004f);
+    saturn->setPlanetColor({0.9f, 0.8f, 0.5f, 1.0f});
+    saturn->loadTexture("images/saturn.jpg");
+    gameObjects.push_back(saturn);
+    planets.push_back(saturn);
+
+    // Create uranus planet from Planet class
+    Planet* uranus = new Planet();
+    uranus->setPlanetRadius(250.0f);
+    uranus->setCenter({7800.0f, 1000.0f, 0.0f, 1.0f});
+    uranus->setOrbitRadius(7800.0f);
+    uranus->setOrbitSpeed(0.0002f);
+    uranus->setPlanetColor({0.5f, 0.8f, 0.9f, 1.0f});
+    uranus->loadTexture("images/uranus.jpg");
+    gameObjects.push_back(uranus);
+    planets.push_back(uranus);
+
+    // Create neptune planet from Planet class
+    Planet* neptune = new Planet();
+    neptune->setPlanetRadius(200.0f);
+    neptune->setCenter({8600.0f, 1000.0f, 0.0f, 1.0f});
+    neptune->setOrbitRadius(8600.0f);
+    neptune->setOrbitSpeed(0.0003f);
+    neptune->setPlanetColor({0.0f, 0.3f, 0.8f, 1.0f});
+    neptune->loadTexture("images/neptune.jpg");
+    gameObjects.push_back(neptune);
+    planets.push_back(neptune);
+}
+
 void GameMaster::Update() {
     // Update game logic
     if (state != MAIN_MENU && state != GAME_OVER) {
@@ -876,32 +921,4 @@ void GameMaster::decreaseHealth(int amount) {
     } else {
         spaceship.setHealth(currentHealth - amount);
     }
-}
-
-void GameMaster::playSound(const std::string &filename)
-{
-    // Initialize SDL_mixer
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-    {
-        std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
-        return;
-    }
-
-    // Load sound
-    Mix_Chunk *Sound = Mix_LoadWAV(filename.c_str());
-    if (Sound == nullptr)
-    {
-        std::cerr << "Failed to load crash sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
-        return;
-    }
-
-    // Play sound
-    Mix_PlayChannel(-1, Sound, 0);
-
-    // Wait for sound to finish
-    SDL_Delay(1000);
-
-    // Clean up
-    Mix_FreeChunk(Sound);
-    Mix_CloseAudio();
 }

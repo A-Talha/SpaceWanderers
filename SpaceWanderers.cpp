@@ -52,6 +52,18 @@ void specialKeys(int key, int x, int y) {
     glutPostRedisplay();
 }
 
+// Function to handle key release
+void keyUp(unsigned char key, int x, int y) {
+    gameMaster.keyUp(key);
+    glutPostRedisplay();
+}
+
+// Function to handle special key release
+void specialKeysUp(int key, int x, int y) {
+    gameMaster.SpecialKeyUp(key, x, y);
+    glutPostRedisplay();
+}
+
 // Function to handle mouse input
 void mouse(int button, int state, int x, int y) {
     gameMaster.processMouse(button, state, x, y);
@@ -94,6 +106,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKeys);
+    glutKeyboardUpFunc(keyUp);
+    glutSpecialUpFunc(specialKeysUp);
     glutMouseFunc(mouse);
 
     // Start the main loop
