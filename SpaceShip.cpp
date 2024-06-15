@@ -7,16 +7,31 @@
 SpaceShip::SpaceShip()
     : GameObject(SPACESHIP), weaponPower(100), moveSpeed(100.0f), rotationSpeed(5.0f) {
     // Additional initialization if needed
+    // set the initial time since last to be with the creation of the spaceship
     bounding_sphere_radius = 400.0f;
+    timeSinceLastShot = glutGet(GLUT_ELAPSED_TIME);
+
+    // set the time between shots to be 0.5 seconds
+    timeBetweenShots = 500;
 }
 
 SpaceShip::SpaceShip(ObjectType type)
     : GameObject(type), weaponPower(100), moveSpeed(100.0f), rotationSpeed(5.0f){
     // Additional initialization if needed
+    // set the initial time since last to be with the creation of the spaceship
     bounding_sphere_radius = 400.0f;
+    timeSinceLastShot = glutGet(GLUT_ELAPSED_TIME);
+
+    // set the time between shots to be 0.5 seconds
+    timeBetweenShots = 500;
 }
 
 void SpaceShip::fireWeapon(std::vector<GameObject*>& gameObjectsRef) {
+    // Check if enough time has passed since the last shot
+    if (glutGet(GLUT_ELAPSED_TIME) - timeSinceLastShot < timeBetweenShots) {
+        return;
+    }
+    timeSinceLastShot = glutGet(GLUT_ELAPSED_TIME);
     std::cout << "Firing weapon with power: " << weaponPower << std::endl;
     FireBullet* fireBullet = new FireBullet(weaponPower, getFirstPersonCameraPosition(), getFirstPersonLookAt(), gameObjectsRef);
 

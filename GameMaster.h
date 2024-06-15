@@ -29,6 +29,12 @@ enum GameState {
     GAME_OVER
 };
 
+enum GameResult {
+    WIN,
+    LOSE,
+    TIMEISUP
+};
+
 class GameMaster {
 public:
     static GameMaster& GetInstance() {
@@ -53,7 +59,7 @@ public:
     void GoToMainMenu();
     void StartSurvivalMode();
     void StartTimeMode();
-    void EndGameOver();
+    void EndGameOver(GameResult result);
     void Update();
     void DestroyGameObject(GameObject* gameObject);
 
@@ -61,6 +67,7 @@ private:
     GameMaster();
     ~GameMaster();
     GameState state;
+    GameResult result;
     SpaceShip spaceship;
     std::vector<float> SUN_POSITION = {0.0f, 1000.0f, 0.0f, 1.0f}; // x, y, z, w
     std::vector<float> SUN_COLOR = {1.0f, 0.5f, 0.0f, 1.0f}; // White-yellow light

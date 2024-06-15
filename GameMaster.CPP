@@ -169,7 +169,7 @@ void GameMaster::handleKeys() {
                 spaceship.RotateRight();
                 break;
             case ' ':
-                std::thread(&GameMaster::playSound, this, "Laser.wav").detach();
+                std::thread(&GameMaster::playSound, this, "src/Laser.wav").detach();
                 spaceship.fireWeapon(gameObjects);
                 break;
             case 'w':
@@ -179,10 +179,10 @@ void GameMaster::handleKeys() {
                 decreaseHealth(10);
                 break;
             case 'c':
-                std::thread(&GameMaster::playSound, this, "Explosion.wav").detach();
+                std::thread(&GameMaster::playSound, this, "src/Explosion.wav").detach();
                 break;
             case 'v':
-                std::thread(&GameMaster::playSound, this, "Laser.wav").detach();
+                std::thread(&GameMaster::playSound, this, "src/Laser.wav").detach();
                 break;
             // Add more cases as needed
         }
@@ -332,6 +332,7 @@ void GameMaster::StartSurvivalMode() {
     updateGameState(SURVIVAL_MODE);
     // Set the initial score to 0
     score = 0;
+    CurrentNumberOfEnemiesKilled = 0;
     // Set the current ID to 1
     currentID = 1;
     // Set the maximum number of enemies to 5
@@ -442,6 +443,7 @@ void GameMaster::StartTimeMode() {
 
     // Set initial game parameters
     score = 0;
+    CurrentNumberOfEnemiesKilled = 0;
     currentID = 1;
     maxNumberOfEnemies = 3;
     CurrentNumberOfEnemies = 0;
@@ -456,8 +458,19 @@ void GameMaster::StartTimeMode() {
 }
 
 
-void GameMaster::EndGameOver() {
+void GameMaster::EndGameOver(GameResult result) {
+    std::cout << "Game Over!" << std::endl;
+    this->result = result;
     clearGameObjects();
+
+    // Reset OpenGL state
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+    glDisable(GL_COLOR_MATERIAL);
+    glDisable(GL_SCISSOR_TEST);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     updateGameState(GAME_OVER);
 }
 
@@ -586,6 +599,11 @@ void GameMaster::DrawSurvivalMode() {
     // draw the time elapsed on the top right of the viewport
     float timeElapsed = (currentTime - startTime) / 1000;
     std::string timeString = "Time Elapsed: " + std::to_string(timeElapsed);
+    std::string enemiesRemaining = "Enemies Remaining: " + std::to_string(max(CurrentNumberOfEnemies,maxNumberOfEnemiesToSpawned));
+    drawText(enemiesRemaining.c_str(), 200, 30.0f, GLUT_BITMAP_HELVETICA_18);
+    //number of enemies killed
+    std::string enemiesKilled = "Enemies Killed: " + std::to_string(CurrentNumberOfEnemiesKilled);
+    drawText(enemiesKilled.c_str(), 200, 50.0f, GLUT_BITMAP_HELVETICA_18);
     drawText(timeString.c_str(), 0 , 50.0f, GLUT_BITMAP_HELVETICA_18);
     drawHealthBar(0, 0, topViewportWidth, 20.0, 100.0, spaceship.getHealth());
     //enable depth test
@@ -680,6 +698,11 @@ void GameMaster::DrawTimeMode() {
     glColor3f(1.0f, 1.0f, 1.0f);
     std::string scorestring = "Score: " + std::to_string(score);
     drawText(scorestring.c_str(), 0, 30.0f, GLUT_BITMAP_HELVETICA_18);
+    std::string enemiesRemaining = "Enemies Remaining: " + std::to_string(max(CurrentNumberOfEnemies,maxNumberOfEnemiesToSpawned));
+    drawText(enemiesRemaining.c_str(), 200, 30.0f, GLUT_BITMAP_HELVETICA_18);
+    //number of enemies killed
+    std::string enemiesKilled = "Enemies Killed: " + std::to_string(CurrentNumberOfEnemiesKilled);
+    drawText(enemiesKilled.c_str(), 200, 50.0f, GLUT_BITMAP_HELVETICA_18);
     // draw the time remaining on the top right of the viewport
     float timeRemaining = (TimeLimit - (currentTime - startTime)) / 1000;
     std::string timeString = "Time Remaining: " + std::to_string(timeRemaining);
@@ -699,7 +722,51 @@ void GameMaster::DrawTimeMode() {
 
 
 void GameMaster::DrawGameOver() {
-    // Draw the game over screen
+    // Clear color and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Reset the viewport
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // Reset the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, WINDOW_WIDTH, 0.0, WINDOW_HEIGHT);
+
+    // Reset the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    // Reset color
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    // Draw the title
+    glColor3f(1.0f, 0.0f, 0.0f); // Red color
+    if (result == WIN) {
+        //Draw win in the middle of the screen based on the window size WINDOW_WIDTH WINDOW_HEIGHT
+        float x = (WINDOW_WIDTH - 200) / 2;
+        float y = (WINDOW_HEIGHT - 50) / 2;
+        drawStrokedText("You Win!", x, y, 0.3f);
+        drawStrokedText("Press ESC to return to main menu", x - 100, y - 50, 0.2f);
+    } else if (result == LOSE) {
+        //Draw lose in the middle of the screen based on the window size WINDOW_WIDTH WINDOW_HEIGHT
+        float x = (WINDOW_WIDTH - 200) / 2;
+        float y = (WINDOW_HEIGHT - 50) / 2;
+        drawStrokedText("You Lose!", x, y, 0.3f);
+        drawStrokedText("Press ESC to return to main menu", x - 100, y - 50, 0.2f);
+    }
+    else
+    {
+        //Draw game over in the middle of the screen based on the window size WINDOW_WIDTH WINDOW_HEIGHT
+        float x = (WINDOW_WIDTH - 200) / 2;
+        float y = (WINDOW_HEIGHT - 50) / 2;
+        drawStrokedText("Time Is UP!", x, y+50, 0.3f);
+        drawStrokedText("Game Over!", x, y, 0.3f);
+        drawStrokedText("Press ESC to return to main menu", x - 100, y - 50, 0.2f);
+    }
+    
+    
+    
 }
 
 void GameMaster::DrawScene() {
@@ -818,7 +885,7 @@ void GameMaster::Update() {
             if (obj->getType() == ObjectType::ENEMYSHIP) {
                 EnemyShip* enemy = dynamic_cast<EnemyShip*>(obj);
                 float playerPosition[3] = {spaceship.getPositionX(), spaceship.getPositionY(), spaceship.getPositionZ()};
-                enemy->update(playerPosition, planets, enemyShips);
+                enemy->update(playerPosition, planets, enemyShips,gameObjects);
             } else {
                 obj->update();
             }
@@ -841,10 +908,10 @@ void GameMaster::Update() {
         // Check if the time limit has been reached
         currentTime = glutGet(GLUT_ELAPSED_TIME);
         if (currentTime - startTime > TimeLimit) {
-            EndGameOver();
+            EndGameOver(TIMEISUP);
         }
         if (CurrentNumberOfEnemies == 0 && maxNumberOfEnemiesToSpawned == 0) {
-            EndGameOver();
+            EndGameOver(WIN);
         }
         // Check if it's time to spawn a new enemy
         if (CurrentNumberOfEnemies < maxNumberOfEnemies && maxNumberOfEnemiesToSpawned > 0) {
@@ -936,7 +1003,8 @@ void GameMaster::decreaseHealth(int amount) {
     int currentHealth = spaceship.getHealth();
     if (currentHealth - amount <= 0) {
         spaceship.setHealth(0);
-        EndGameOver();
+        EndGameOver(LOSE);
+        glutPostRedisplay();
     } else {
         spaceship.setHealth(currentHealth - amount);
     }
